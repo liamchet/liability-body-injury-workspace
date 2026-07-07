@@ -1,11 +1,17 @@
+import migdalLogo from "../assets/migdal-logo.png";
+
 export default function Header({ meta, productName }) {
   return (
     <header className="top-header">
       <div className="brand-block">
-        <div className="eyebrow">Body Injury Claims Workspace</div>
-        <h1>{productName}</h1>
+        <img src={migdalLogo} alt="מגדל" />
+        <div>
+          <div className="eyebrow">Body Injury Claims Workspace</div>
+          <h1>{productName}</h1>
+        </div>
       </div>
       <div className="case-strip">
+        <Meta label="נפגע/ת" value={meta.claimant} />
         <Meta label="סטטוס" value={meta.status} strong />
         <Meta label="תביעה" value={meta.claimNumber} />
         <Meta label="פוליסה" value={meta.policyNumber} />

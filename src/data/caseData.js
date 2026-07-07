@@ -11,12 +11,12 @@ export const caseData = {
     lastAiUpdate: "01/07/2026 14:20",
   },
   overview: [
-    { id: "event", tab: "overview", title: "נסיבות האירוע", value: "נוסעת מאחור, הריון שבוע 32", detail: "רכב מסחרי החליק בגשם בכביש בין-עירוני והתנגש ברכב פרטי. דווח על אובדן הכרה קצר ופינוי למד״א.", tone: "blue" },
-    { id: "disability", tab: "experts", title: "נכות מרכזית", value: "49% מל״ל לצמיתות", detail: "קיימות קביעות שונות בין מומחים: אורתופדיה, נוירולוגיה, פסיכיאטריה וכאב כרוני.", tone: "green" },
-    { id: "experts", tab: "experts", title: "חוות דעת מרכזיות", value: "5 חוות דעת", detail: "אורתופדיה, נוירולוגיה, פסיכיאטריה, ראומטולוגיה וחיזוי נכות.", tone: "blue" },
-    { id: "medical", tab: "timeline", title: "אירועים רפואיים", value: "18 אירועים מהותיים", detail: "מיון, אשפוז, הדמיות, שיקום, ניתוח וחוות דעת.", tone: "orange" },
-    { id: "docs", tab: "documents", title: "מסמכים קריטיים", value: "22 מסמכים", detail: "רובם נכללו, חלק מהחקירות ומסמכי הגישור סומנו כחלקיים.", tone: "gray" },
-    { id: "gaps", tab: "gaps", title: "פערים לבדיקה", value: "6 פערים", detail: "פערים נוירולוגיים, שיעור נכות, תפקוד, לימודים, אבחנה וטיפול.", tone: "red" },
+    { id: "event", section: "event", title: "נסיבות האירוע", value: "נוסעת מאחור, הריון שבוע 32", detail: "רכב מסחרי החליק בגשם בכביש בין-עירוני והתנגש ברכב פרטי.", tone: "blue" },
+    { id: "disability", section: "disability", title: "אחוזי נכות מרכזיים", value: "49% מל״ל לצמיתות", detail: "לצד קביעות מומחים של 10%, 15%, 20% בתחומים שונים.", tone: "green" },
+    { id: "experts", section: "experts", title: "חוות דעת מומחים", value: "5 חוות דעת", detail: "אורתופדיה, נוירולוגיה, פסיכיאטריה, ראומטולוגיה וחיזוי.", tone: "blue" },
+    { id: "medical", section: "timeline", title: "אירועים רפואיים", value: "14 אירועים", detail: "מיון, אשפוז, הדמיות, שיקום, ניתוח וחוות דעת.", tone: "orange" },
+    { id: "docs", section: "documents", title: "מסמכים ומקורות", value: "17 מסמכים", detail: "טבלת עיבוד קומפקטית עם תצוגת מקור.", tone: "gray" },
+    { id: "gaps", section: "gaps", title: "פערים / סתירות", value: "6 פערים", detail: "פערים מהותיים בלבד, ללא הכרעה בין הגורמים.", tone: "red" },
   ],
   claimantProfile: [
     ["נפגעת", "תובעת א׳"],

@@ -1,83 +1,160 @@
 import { useMemo, useState } from "react";
 import { caseData } from "./data/caseData";
 import Header from "./components/Header";
-import Tabs from "./components/Tabs";
 import OverviewCards from "./components/OverviewCards";
 import EventSummary from "./components/EventSummary";
-import ClaimantProfile from "./components/ClaimantProfile";
 import MedicalTimeline from "./components/MedicalTimeline";
 import ExpertOpinions from "./components/ExpertOpinions";
 import DisabilityMatrix from "./components/DisabilityMatrix";
 import DocumentsPanel from "./components/DocumentsPanel";
 import GapsPanel from "./components/GapsPanel";
-import ProcessingStatus from "./components/ProcessingStatus";
-import FutureRecommendations from "./components/FutureRecommendations";
 import SourceModal from "./components/SourceModal";
+import ReportSection from "./components/ReportSection";
+import GeneralDetails from "./components/GeneralDetails";
 
-const tabs = [
-  { id: "overview", label: "תמונת מצב" },
-  { id: "timeline", label: "רצף רפואי" },
-  { id: "experts", label: "חוות דעת ונכות" },
-  { id: "documents", label: "מסמכים" },
-  { id: "gaps", label: "פערים וסתירות" },
-  { id: "future", label: "הערכת סיכון והמלצה" },
-];
+const initialOpen = new Set(["event", "disability", "experts"]);
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState("overview");
+  const [openSections, setOpenSections] = useState(initialOpen);
   const [modalSource, setModalSource] = useState(null);
 
-  const criticalDocs = useMemo(
-    () => caseData.documents.filter((doc) => ["נכלל", "חלקית"].includes(doc[4])).slice(0, 6),
+  const summaryCards = useMemo(
+    () => caseData.overview.filter((card) => ["event", "disability", "experts", "medical", "gaps"].includes(card.id)),
     []
   );
+
+  const toggleSection = (id) => {
+    const next = new Set(openSections);
+    next.has(id) ? next.delete(id) : next.add(id);
+    setOpenSections(next);
+  };
+
+  const openSection = (id) => {
+    setOpenSections((current) => new Set([...current, id]));
+    document.getElementById(`section-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <div className="app-shell">
       <Header meta={caseData.caseMeta} productName={caseData.productName} />
-      <main className="workspace">
-        <OverviewCards cards={caseData.overview} onNavigate={setActiveTab} />
-        <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
 
-        {activeTab === "overview" && (
-          <section className="tab-grid overview-grid">
-            <div className="main-column">
-              <EventSummary event={caseData.eventSummary} onSource={setModalSource} />
-              <MedicalTimeline
-                compact
-                events={caseData.timeline.slice(0, 6)}
-                onSource={setModalSource}
-              />
-            </div>
-            <aside className="side-column">
-              <ClaimantProfile profile={caseData.claimantProfile} />
-              <ProcessingStatus meta={caseData.caseMeta} documents={criticalDocs} />
-            </aside>
-          </section>
-        )}
+      <main className="report-workspace">
+        <section className="report-intro">
+          <div>
+            <span className="eyebrow">סיכום תיק נזקי גוף</span>
+            <h1>מרחב עבודה חכם למיישב תביעות</h1>
+            <p>
+              תצוגה מובנית לפי סעיפי הדוח: עובדות, רצף רפואי, נכות, מומחים,
+              פערים ומקורות. כל המידע בתצוגה אנונימי ומיועד לאימות מול מסמכי המקור.
+            </p>
+          </div>
+          <div className="intro-status">
+            <strong>{caseData.caseMeta.aiStatus}</strong>
+            <span>עדכון אחרון: {caseData.caseMeta.lastAiUpdate}</span>
+          </div>
+        </section>
 
-        {activeTab === "timeline" && (
-          <MedicalTimeline events={caseData.timeline} onSource={setModalSource} />
-        )}
+        <OverviewCards cards={summaryCards} onNavigate={openSection} />
 
-        {activeTab === "experts" && (
-          <section className="stack">
-            <ExpertOpinions experts={caseData.experts} onSource={setModalSource} />
+        <section className="accordion-stack" aria-label="סעיפי סיכום תיק">
+          <ReportSection
+            id="general"
+            letter="א"
+            title="פרטים כלליים"
+            summary="פרטי תיק אנונימיים, סוג התביעה ונתוני רקע תפקודיים."
+            open={openSections.has("general")}
+            onToggle={toggleSection}
+          >
+            <GeneralDetails meta={caseData.caseMeta} profile={caseData.claimantProfile} />
+          </ReportSection>
+
+          <ReportSection
+            id="event"
+            letter="ב"
+            title="נסיבות האירוע"
+            summary="תיאור קצר ומבוסס מקור של התאונה והפינוי הראשוני."
+            open={openSections.has("event")}
+            onToggle={toggleSection}
+          >
+            <EventSummary event={caseData.eventSummary} onSource={setModalSource} />
+          </ReportSection>
+
+          <ReportSection
+            id="timeline"
+            letter="ג"
+            title="סיכום תיעוד רפואי כרונולוגי"
+            summary="ציר זמן רפואי עם חיפוש, סינון ופתיחת מקורות."
+            open={openSections.has("timeline")}
+            onToggle={toggleSection}
+          >
+            <MedicalTimeline events={caseData.timeline} onSource={setModalSource} />
+          </ReportSection>
+
+          <ReportSection
+            id="disability"
+            letter="ד"
+            title="הערכות נכות"
+            summary="השוואת אחוזי נכות בין מומחים, מל״ל וחיזוי."
+            open={openSections.has("disability")}
+            onToggle={toggleSection}
+          >
             <DisabilityMatrix rows={caseData.disabilityMatrix} />
-          </section>
-        )}
+          </ReportSection>
 
-        {activeTab === "documents" && (
-          <DocumentsPanel documents={caseData.documents} onSource={setModalSource} />
-        )}
+          <ReportSection
+            id="experts"
+            letter="ה"
+            title="חוות דעת מומחים"
+            summary="חוות הדעת המרכזיות והקביעות הרפואיות הבולטות."
+            open={openSections.has("experts")}
+            onToggle={toggleSection}
+          >
+            <ExpertOpinions experts={caseData.experts} onSource={setModalSource} />
+          </ReportSection>
 
-        {activeTab === "gaps" && <GapsPanel gaps={caseData.gaps} />}
-        {activeTab === "future" && <FutureRecommendations />}
+          <ReportSection
+            id="gaps"
+            letter="ו"
+            title="סתירות / פערים מהותיים"
+            summary="פערים מהותיים בלבד, ללא הכרעה או המלצה משפטית."
+            open={openSections.has("gaps")}
+            onToggle={toggleSection}
+          >
+            <GapsPanel gaps={caseData.gaps} />
+          </ReportSection>
+
+          <ReportSection
+            id="documents"
+            letter="ז"
+            title="מסמכים שנקראו"
+            summary="טבלת עיבוד מסמכים קומפקטית עם תצוגת מקור."
+            open={openSections.has("documents")}
+            onToggle={toggleSection}
+          >
+            <DocumentsPanel documents={caseData.documents} onSource={setModalSource} />
+          </ReportSection>
+
+          <ReportSection
+            id="ai-note"
+            letter="ח"
+            title="הערת AI"
+            summary="הבהרת שימוש במערכת וסימון אפיק עתידי קטן."
+            open={openSections.has("ai-note")}
+            onToggle={toggleSection}
+          >
+            <div className="ai-note-card">
+              <p>
+                סיכום זה הופק באמצעות מערכת בינה מלאכותית (AI) ועלול להכיל טעויות.
+                יש לבצע בדיקה ואימות של המידע מול המסמכים המקוריים לפני קבלת החלטה.
+              </p>
+              <div className="future-mini">
+                <strong>הערכת סיכון והמלצה</strong>
+                <span>אפיק עתידי, לא פעיל בגרסה זו, ואינו מהווה המלצה לאישור או דחיית תביעה.</span>
+              </div>
+            </div>
+          </ReportSection>
+        </section>
       </main>
-
-      <footer className="ai-footer">
-        ⚠️ סיכום זה הופק באמצעות מערכת בינה מלאכותית (AI) ועלול להכיל טעויות. יש לבצע בדיקה ואימות של המידע מול המסמכים המקוריים לפני קבלת החלטה.
-      </footer>
 
       <SourceModal source={modalSource} onClose={() => setModalSource(null)} />
     </div>
