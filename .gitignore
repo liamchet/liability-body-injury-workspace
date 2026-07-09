@@ -2,7 +2,11 @@ node_modules/
 dist/
 .env
 .env.*
-source/
+source/*
+!source/design-system/
+!source/design-system/**
+!source/screenshots/
+!source/screenshots/**
 .design-system/
 *.docx
 *.txt

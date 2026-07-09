@@ -6,10 +6,15 @@ export default function SourceModal({ source, onClose }) {
       <div className="source-modal">
         <div className="modal-head">
           <div>
-            <span className="eyebrow">{source.type}</span>
+            <span className="eyebrow">{source.section || "מקור"}</span>
             <h2>{source.title}</h2>
           </div>
           <button onClick={onClose} aria-label="סגור">×</button>
+        </div>
+        <div className="modal-meta">
+          <span>סוג: <b>{source.type || "לא נמצא במסמכים"}</b></span>
+          <span>תאריך: <b>{source.date || "לא נמצא במסמכים"}</b></span>
+          <span>סעיף: <b>{source.section || "לא נמצא במסמכים"}</b></span>
         </div>
         <div className="mock-preview">
           <p>{source.preview}</p>
