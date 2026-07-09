@@ -16,6 +16,7 @@ export default function Header({ meta, productName }) {
         <Meta label="תאריך הפקת הדוח" value={meta.reportDate} />
         <Meta label="מספר תביעה" value={meta.claimNumber} />
         <Meta label="מספר פוליסה" value={meta.policyNumber} />
+        <Meta label="מהות התביעה" value={meta.type} />
       </div>
     </header>
   );

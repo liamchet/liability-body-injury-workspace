@@ -6,23 +6,13 @@ export default function SourceModal({ source, onClose }) {
       <div className="source-modal">
         <div className="modal-head">
           <div>
-            <span className="eyebrow">{source.section || "מקור"}</span>
             <h2>{source.title}</h2>
+            <span>תאריך המסמך: <b>{source.date || "לא נמצא במסמכים"}</b></span>
           </div>
           <button onClick={onClose} aria-label="סגור">×</button>
         </div>
-        <div className="modal-meta">
-          <span>סוג: <b>{source.type || "לא נמצא במסמכים"}</b></span>
-          <span>תאריך: <b>{source.date || "לא נמצא במסמכים"}</b></span>
-          <span>סעיף: <b>{source.section || "לא נמצא במסמכים"}</b></span>
-        </div>
         <div className="mock-preview">
-          <p>{source.preview}</p>
-          <p className="muted">תצוגת מקור מקוצרת לאבטיפוס. יש לאמת מול המסמך המקורי במערכת התביעות.</p>
-        </div>
-        <div className="modal-actions">
-          <button className="primary-button" onClick={onClose}>סגור</button>
-          <button className="ghost-button">סמן לבדיקה</button>
+          <p>{source.content || "לא נמצא תוכן מלא זמין לתצוגה במסמך זה."}</p>
         </div>
       </div>
     </div>

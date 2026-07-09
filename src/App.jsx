@@ -11,7 +11,7 @@ import SourceModal from "./components/SourceModal";
 import ReportSection from "./components/ReportSection";
 import GeneralDetails from "./components/GeneralDetails";
 
-const initialOpen = new Set(["event", "timeline", "experts", "disability"]);
+const initialOpen = new Set(["event"]);
 
 export default function App() {
   const [openSections, setOpenSections] = useState(initialOpen);
@@ -30,7 +30,7 @@ export default function App() {
       <main className="report-workspace">
         <section className="report-section fixed-section" id="section-general">
           <div className="fixed-section-head">
-            <span className="section-letter">1</span>
+            <span className="section-icon" aria-hidden="true">●</span>
             <strong>פרטים כלליים</strong>
           </div>
           <div className="report-section-body">
@@ -41,10 +41,9 @@ export default function App() {
         <section className="accordion-stack" aria-label="סעיפי סיכום תיק">
           <ReportSection
             id="event"
-            number="2"
+            icon="◔"
             title="נסיבות האירוע"
             summary={caseData.eventSummary.short}
-            sourceHint="2 מקורות"
             open={openSections.has("event")}
             onToggle={toggleSection}
           >
@@ -53,9 +52,9 @@ export default function App() {
 
           <ReportSection
             id="timeline"
-            number="3"
+            icon="↕"
             title="סיכום רפואי כרונולוגי"
-            summary="רשימת מסמכים ואירועים רפואיים לפי סדר תאריכים."
+            summary="אירועים רפואיים מרכזיים לפי סדר תאריכים."
             open={openSections.has("timeline")}
             onToggle={toggleSection}
           >
@@ -64,9 +63,9 @@ export default function App() {
 
           <ReportSection
             id="experts"
-            number="4"
+            icon="✎"
             title="חוות דעת מומחים"
-            summary="חוות דעת נפרדות עם אחוזי נכות ומקור."
+            summary="קביעות מומחים ואחוזי נכות."
             open={openSections.has("experts")}
             onToggle={toggleSection}
           >
@@ -75,7 +74,7 @@ export default function App() {
 
           <ReportSection
             id="disability"
-            number="5"
+            icon="%"
             title="טבלת הערכות נכות"
             summary="השוואת הערכות נכות לפי תחומים וגורמים."
             open={openSections.has("disability")}
@@ -86,7 +85,7 @@ export default function App() {
 
           <ReportSection
             id="gaps"
-            number="6"
+            icon="!"
             title="סתירות ופערים"
             summary="פערים מהותיים בלבד, ללא הכרעה בין מקורות."
             open={openSections.has("gaps")}
@@ -97,9 +96,9 @@ export default function App() {
 
           <ReportSection
             id="documents"
-            number="7"
+            icon="▤"
             title="מסמכים שנקראו"
-            summary="טבלת מסמכים קומפקטית ופתיחת מקור."
+            summary="טבלת מסמכים ומקורות לחיצים."
             open={openSections.has("documents")}
             onToggle={toggleSection}
           >
@@ -109,7 +108,7 @@ export default function App() {
       </main>
 
       <footer className="ai-disclaimer">
-        ⚠️ סיכום זה הופק באמצעות מערכת בינה מלאכותית (AI) ועלול להכיל טעויות. יש לבצע בדיקה ואימות של המידע מול המסמכים המקוריים לפני קבלת החלטה.
+        סיכום זה הופק באמצעות מערכת בינה מלאכותית (AI) ועלול להכיל טעויות. יש לבצע בדיקה ואימות של המידע מול המסמכים המקוריים לפני קבלת החלטה.
       </footer>
 
       <SourceModal source={modalSource} onClose={() => setModalSource(null)} />
