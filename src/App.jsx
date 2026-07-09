@@ -10,12 +10,20 @@ import GapsPanel from "./components/GapsPanel";
 import SourceModal from "./components/SourceModal";
 import ReportSection from "./components/ReportSection";
 import GeneralDetails from "./components/GeneralDetails";
+import EditModal from "./components/EditModal";
 
-const initialOpen = new Set(["event"]);
+const initialOpen = new Set(["general", "event"]);
 
 export default function App() {
   const [openSections, setOpenSections] = useState(initialOpen);
   const [modalSource, setModalSource] = useState(null);
+  const [editModal, setEditModal] = useState(null);
+  const [generalDetails, setGeneralDetails] = useState(caseData.generalDetails);
+  const [eventSummary, setEventSummary] = useState(caseData.eventSummary);
+  const [timeline, setTimeline] = useState(caseData.timeline);
+  const [experts, setExperts] = useState(caseData.experts);
+  const [disabilityMatrix, setDisabilityMatrix] = useState(caseData.disabilityMatrix);
+  const [gaps, setGaps] = useState(caseData.gaps);
 
   const toggleSection = (id) => {
     const next = new Set(openSections);
@@ -28,26 +36,46 @@ export default function App() {
       <Header meta={caseData.caseMeta} productName={caseData.productName} />
 
       <main className="report-workspace">
-        <section className="report-section fixed-section" id="section-general">
-          <div className="fixed-section-head">
-            <span className="section-icon" aria-hidden="true">●</span>
-            <strong>פרטים כלליים</strong>
-          </div>
-          <div className="report-section-body">
-            <GeneralDetails details={caseData.generalDetails} />
-          </div>
-        </section>
-
         <section className="accordion-stack" aria-label="סעיפי סיכום תיק">
+          <ReportSection
+            id="general"
+            icon="●"
+            title="פרטים כלליים"
+            open={openSections.has("general")}
+            onToggle={toggleSection}
+            actions={
+              <button
+                className="icon-action"
+                title="ערוך פרטים כלליים"
+                aria-label="ערוך פרטים כלליים"
+                onClick={() =>
+                  setEditModal({
+                    title: "עריכת פרטים כלליים",
+                    fields: generalDetails.map(([label]) => ({ name: label, label, type: "textarea", rows: 2 })),
+                    initialValues: Object.fromEntries(generalDetails),
+                    onSave: (values) => {
+                      setGeneralDetails(generalDetails.map(([label]) => [label, values[label] || ""]));
+                      setEditModal(null);
+                    },
+                  })
+                }
+              >
+                ✎
+              </button>
+            }
+          >
+            <GeneralDetails details={generalDetails} />
+          </ReportSection>
+
           <ReportSection
             id="event"
             icon="◔"
             title="נסיבות האירוע"
-            summary={caseData.eventSummary.short}
+            summary={eventSummary.short}
             open={openSections.has("event")}
             onToggle={toggleSection}
           >
-            <EventSummary event={caseData.eventSummary} onSource={setModalSource} />
+            <EventSummary event={eventSummary} onSource={setModalSource} onUpdate={setEventSummary} />
           </ReportSection>
 
           <ReportSection
@@ -57,8 +85,26 @@ export default function App() {
             summary="אירועים רפואיים מרכזיים לפי סדר תאריכים."
             open={openSections.has("timeline")}
             onToggle={toggleSection}
+            actions={
+              <button
+                className="text-action"
+                onClick={() => setTimeline((items) => [
+                  ...items,
+                  {
+                    id: Date.now(),
+                    date: "",
+                    title: "אירוע רפואי חדש",
+                    summary: "סיכום קצר לעריכה",
+                    full: "סיכום מלא לעריכה",
+                    source: { title: "מקור חדש", date: "", type: "מסמך מקור", content: "תוכן מקור לדוגמה." },
+                  },
+                ])}
+              >
+                הוסף אירוע / מסמך רפואי
+              </button>
+            }
           >
-            <MedicalTimeline events={caseData.timeline} onSource={setModalSource} />
+            <MedicalTimeline events={timeline} setEvents={setTimeline} onSource={setModalSource} />
           </ReportSection>
 
           <ReportSection
@@ -69,18 +115,17 @@ export default function App() {
             open={openSections.has("experts")}
             onToggle={toggleSection}
           >
-            <ExpertOpinions experts={caseData.experts} onSource={setModalSource} />
+            <ExpertOpinions experts={experts} setExperts={setExperts} onSource={setModalSource} />
           </ReportSection>
 
           <ReportSection
             id="disability"
             icon="%"
             title="טבלת הערכות נכות"
-            summary="השוואת הערכות נכות לפי תחומים וגורמים."
             open={openSections.has("disability")}
             onToggle={toggleSection}
           >
-            <DisabilityMatrix rows={caseData.disabilityMatrix} />
+            <DisabilityMatrix rows={disabilityMatrix} setRows={setDisabilityMatrix} />
           </ReportSection>
 
           <ReportSection
@@ -90,8 +135,56 @@ export default function App() {
             summary="פערים מהותיים בלבד, ללא הכרעה בין מקורות."
             open={openSections.has("gaps")}
             onToggle={toggleSection}
+            actions={
+              <button
+                className="text-action"
+                onClick={() =>
+                  setEditModal({
+                    title: "הוספת פער",
+                    fields: [
+                      { name: "topic", label: "נושא הפער" },
+                      { name: "positionA", label: "עמדה א׳" },
+                      { name: "sourceA", label: "מקור א׳" },
+                      { name: "whatA", label: "הסבר מקור א׳", type: "textarea", rows: 2 },
+                      { name: "positionB", label: "עמדה ב׳" },
+                      { name: "sourceB", label: "מקור ב׳" },
+                      { name: "whatB", label: "הסבר מקור ב׳", type: "textarea", rows: 2 },
+                      { name: "detail", label: "סיכום מורחב של הפער", type: "textarea", rows: 4 },
+                    ],
+                    initialValues: {
+                      topic: "",
+                      positionA: "",
+                      sourceA: "",
+                      whatA: "",
+                      positionB: "",
+                      sourceB: "",
+                      whatB: "",
+                      detail: "",
+                    },
+                    onSave: (values) => {
+                      setGaps((items) => [
+                        ...items,
+                        {
+                          topic: values.topic || "פער חדש",
+                          positionA: values.positionA || "עמדה א׳",
+                          positionB: values.positionB || "עמדה ב׳",
+                          detail: values.detail || "",
+                          sourceA: { title: values.sourceA || "מקור א׳", date: "", type: "מקור", content: values.whatA || "" },
+                          whatA: values.whatA || "",
+                          sourceB: { title: values.sourceB || "מקור ב׳", date: "", type: "מקור", content: values.whatB || "" },
+                          whatB: values.whatB || "",
+                        },
+                      ]);
+                      setEditModal(null);
+                    },
+                  })
+                }
+              >
+                הוסף פער
+              </button>
+            }
           >
-            <GapsPanel gaps={caseData.gaps} onSource={setModalSource} />
+            <GapsPanel gaps={gaps} onSource={setModalSource} />
           </ReportSection>
 
           <ReportSection
@@ -112,6 +205,12 @@ export default function App() {
       </footer>
 
       <SourceModal source={modalSource} onClose={() => setModalSource(null)} />
+      {editModal && (
+        <EditModal
+          {...editModal}
+          onCancel={() => setEditModal(null)}
+        />
+      )}
     </div>
   );
 }
