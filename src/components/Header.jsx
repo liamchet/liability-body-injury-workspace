@@ -1,6 +1,10 @@
+import { useState } from "react";
 import migdalLogo from "../assets/migdal-logo.png";
 
 export default function Header({ meta, productName }) {
+  const [lookup, setLookup] = useState("");
+  const [found, setFound] = useState(false);
+
   return (
     <header className="top-header">
       <div className="brand-block">
@@ -10,6 +14,11 @@ export default function Header({ meta, productName }) {
           <h1>{productName}</h1>
         </div>
       </div>
+      <form className="case-lookup" onSubmit={(event) => { event.preventDefault(); setFound(true); }}>
+        <input value={lookup} onChange={(event) => { setLookup(event.target.value); setFound(false); }} placeholder="הזן ת״ז / מספר תביעה / פוליסה" />
+        <button type="submit">איתור</button>
+        {found && <small>התיק זוהה</small>}
+      </form>
       <div className="case-strip">
         <Meta label="שם מבוטח" value={meta.insuredName} strong />
         <Meta label="תעודת זהות מבוטח" value={meta.insuredId} />

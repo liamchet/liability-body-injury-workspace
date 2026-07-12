@@ -1,9 +1,11 @@
 import { useState } from "react";
 import EditModal from "./EditModal";
+import FeedbackControl from "./FeedbackControl";
 
 export default function ExpertOpinions({ experts, setExperts, onSource }) {
   const [openIds, setOpenIds] = useState(() => new Set());
   const [editing, setEditing] = useState(null);
+  const [adding, setAdding] = useState(false);
 
   const toggle = (id) => {
     const next = new Set(openIds);
@@ -36,12 +38,20 @@ export default function ExpertOpinions({ experts, setExperts, onSource }) {
             opinion: values.opinion,
             full: values.full,
             breakdown: parseBreakdown(values.breakdown),
-            source: { ...item.source, title: values.sourceTitle, date: values.sourceDate || item.source.date },
+            source: { ...item.source, title: values.sourceTitle, date: values.sourceDate || item.source.date, content: values.sourceContent || item.source.content },
           }
         : item
     )));
     setEditing(null);
   };
+  const deleteExpert = (expert) => {
+    if (window.confirm(`למחוק את חוות הדעת של ${expert.name}?`)) setExperts((items) => items.filter((item) => item.id !== expert.id));
+  };
+  const fields = [
+    { name: "date", label: "תאריך" }, { name: "name", label: "שם מומחה" }, { name: "role", label: "תחום" }, { name: "disability", label: "סה״כ אחוזי נכות" },
+    { name: "opinion", label: "סיכום קצר", type: "textarea", rows: 2 }, { name: "full", label: "סיכום מלא", type: "textarea", rows: 5 }, { name: "breakdown", label: "פירוט אחוזי נכות", type: "textarea", rows: 3 },
+    { name: "sourceTitle", label: "שם מקור" }, { name: "sourceDate", label: "תאריך מקור" }, { name: "sourceContent", label: "תוכן מקור / תיאור מקור", type: "textarea", rows: 3 },
+  ];
 
   return (
     <section className="panel">
@@ -49,6 +59,7 @@ export default function ExpertOpinions({ experts, setExperts, onSource }) {
         <button className="text-control" onClick={expandAll}>הרחב הכל</button>
         <span>|</span>
         <button className="text-control" onClick={collapseAll}>צמצם הכל</button>
+        <button className="text-action" onClick={() => setAdding(true)}>הוסף חוות דעת</button>
       </div>
 
       <div className="expert-list">
@@ -67,6 +78,8 @@ export default function ExpertOpinions({ experts, setExperts, onSource }) {
                 </button>
                 <div className="row-actions">
                   <button className="icon-action" title="ערוך" aria-label="ערוך" onClick={() => setEditing(expert)}>✎</button>
+                  <button className="icon-action danger" title="מחק" aria-label="מחק" onClick={() => deleteExpert(expert)}>×</button>
+                  <FeedbackControl />
                 </div>
               </div>
 
@@ -93,21 +106,12 @@ export default function ExpertOpinions({ experts, setExperts, onSource }) {
           );
         })}
       </div>
+      <div className="bottom-add"><button className="text-action" onClick={() => setAdding(true)}>הוסף חוות דעת</button></div>
 
       {editing && (
         <EditModal
           title="עריכת חוות דעת מומחה"
-          fields={[
-            { name: "date", label: "תאריך" },
-            { name: "name", label: "שם מומחה" },
-            { name: "role", label: "תחום" },
-            { name: "disability", label: "סה\"כ / המלצת נכות" },
-            { name: "opinion", label: "סיכום שורה", type: "textarea", rows: 2 },
-            { name: "full", label: "סיכום מלא", type: "textarea", rows: 6 },
-            { name: "breakdown", label: "פירוט נכות - שורה לכל תחום בפורמט תחום: אחוז", type: "textarea", rows: 4 },
-            { name: "sourceTitle", label: "שם מקור" },
-            { name: "sourceDate", label: "תאריך מקור" },
-          ]}
+          fields={fields}
           initialValues={{
             date: editing.date,
             name: editing.name,
@@ -118,11 +122,13 @@ export default function ExpertOpinions({ experts, setExperts, onSource }) {
             breakdown: breakdownText(editing),
             sourceTitle: editing.source?.title || "",
             sourceDate: editing.source?.date || "",
+            sourceContent: editing.source?.content || "",
           }}
           onCancel={() => setEditing(null)}
           onSave={saveExpert}
         />
       )}
+      {adding && <EditModal title="הוספת חוות דעת" fields={fields} initialValues={{ date: "", name: "", role: "", disability: "", opinion: "", full: "", breakdown: "", sourceTitle: "", sourceDate: "", sourceContent: "" }} onCancel={() => setAdding(false)} onSave={(values) => { setExperts((items) => [...items, { id: Date.now(), date: values.date, name: values.name, role: values.role, disability: values.disability, opinion: values.opinion, full: values.full, breakdown: parseBreakdown(values.breakdown), source: { title: values.sourceTitle, date: values.sourceDate, type: "חוות דעת", content: values.sourceContent } }]); setAdding(false); }} />}
     </section>
   );
 }
