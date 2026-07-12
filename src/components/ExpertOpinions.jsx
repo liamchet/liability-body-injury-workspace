@@ -1,6 +1,5 @@
 import { useState } from "react";
 import EditModal from "./EditModal";
-import FeedbackControl from "./FeedbackControl";
 
 export default function ExpertOpinions({ experts, setExperts, onSource }) {
   const [openIds, setOpenIds] = useState(() => new Set());
@@ -79,7 +78,6 @@ export default function ExpertOpinions({ experts, setExperts, onSource }) {
                 <div className="row-actions">
                   <button className="icon-action" title="ערוך" aria-label="ערוך" onClick={() => setEditing(expert)}>✎</button>
                   <button className="icon-action danger" title="מחק" aria-label="מחק" onClick={() => deleteExpert(expert)}>×</button>
-                  <FeedbackControl />
                 </div>
               </div>
 

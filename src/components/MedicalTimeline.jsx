@@ -1,6 +1,5 @@
 import { useState } from "react";
 import EditModal from "./EditModal";
-import FeedbackControl from "./FeedbackControl";
 
 export default function MedicalTimeline({ events, setEvents, onSource }) {
   const [openIds, setOpenIds] = useState(() => new Set());
@@ -69,7 +68,6 @@ export default function MedicalTimeline({ events, setEvents, onSource }) {
                 <div className="row-actions">
                   <button className="icon-action" title="ערוך" aria-label="ערוך" onClick={() => setEditing(event)}>✎</button>
                   <button className="icon-action danger" title="מחק" aria-label="מחק" onClick={() => deleteEvent(event)}>×</button>
-                  <FeedbackControl />
                 </div>
               </div>
 
