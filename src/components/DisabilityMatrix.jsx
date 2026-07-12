@@ -1,9 +1,25 @@
-const headers = ["תחום", "חיזוי", "מומחה אורתופדי", "מומחה נוירולוגי", "מומחה פסיכיאטרי", "מומחה ראומטולוגי", "מל״ל", "הערת פער"];
+const headers = [
+  "תחום",
+  "ד\"ר מיכאל צור",
+  "ד\"ר יריב גולדשטיין",
+  "פרופ' אבינועם רכס",
+  "ד\"ר אדם דרנל",
+  "פרופ' אורי אלקיים",
+  "מל\"ל",
+  "הערת פער",
+];
 
 export default function DisabilityMatrix({ rows, experts, onSource }) {
   const sourceForHeader = (header) => {
-    const roleMap = { "מומחה אורתופדי": "אורתופדיה", "מומחה נוירולוגי": "נוירולוגיה", "מומחה פסיכיאטרי": "פסיכיאטריה", "מומחה ראומטולוגי": "ראומטולוגיה" };
-    return experts.find((expert) => expert.role === roleMap[header])?.source;
+    const sourceMap = {
+      "ד\"ר מיכאל צור": "prediction",
+      "ד\"ר יריב גולדשטיין": "ortho",
+      "פרופ' אבינועם רכס": "neuro",
+      "ד\"ר אדם דרנל": "psych",
+      "פרופ' אורי אלקיים": "rheum",
+      "מל\"ל": "malal",
+    };
+    return experts.find((expert) => expert.id === sourceMap[header])?.source;
   };
 
   return (
