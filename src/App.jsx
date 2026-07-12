@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { caseData } from "./data/caseData";
+import { caseData } from "#case-data";
 import Header from "./components/Header";
 import LoginScreen from "./components/LoginScreen";
 import FeedbackControl from "./components/FeedbackControl";
