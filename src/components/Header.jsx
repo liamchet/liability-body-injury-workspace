@@ -1,7 +1,7 @@
 import { useState } from "react";
 import PulseBrand from "./PulseBrand";
 
-export default function Header({ meta }) {
+export default function Header({ meta, onOpenAudit, auditCount }) {
   const [lookup, setLookup] = useState("");
   const [found, setFound] = useState(false);
 
@@ -9,6 +9,9 @@ export default function Header({ meta }) {
     <header className="top-header">
       <div className="brand-block">
         <PulseBrand />
+        <button className="header-audit-action" type="button" onClick={onOpenAudit} title="פתיחת יומן שינויים">
+          <span aria-hidden="true">◷</span> יומן שינויים{auditCount ? <b>{auditCount}</b> : null}
+        </button>
       </div>
       <form className="case-lookup" onSubmit={(event) => { event.preventDefault(); setFound(true); }}>
         <input value={lookup} onChange={(event) => { setLookup(event.target.value); setFound(false); }} placeholder="הזן ת״ז / מספר תביעה / פוליסה" />

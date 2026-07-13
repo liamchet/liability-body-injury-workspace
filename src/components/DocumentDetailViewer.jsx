@@ -17,6 +17,7 @@ export default function DocumentDetailViewer({ document, onClose }) {
     : document.sourcePreviewUrl
       ? [document.sourcePreviewUrl]
       : [];
+  const summary = document.fullSummary || document.aiSummary || document.shortSummary;
 
   return (
     <div className="modal-backdrop document-viewer-backdrop" role="dialog" aria-modal="true" aria-labelledby="document-viewer-title" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
@@ -35,32 +36,29 @@ export default function DocumentDetailViewer({ document, onClose }) {
         </header>
 
         <div className="document-viewer-scroll">
-          <section className="document-summary-block ai-summary-block">
-            <h3>סיכום AI למסמך</h3>
-            <p>{document.aiSummary || document.shortSummary || "לא נמצא סיכום AI זמין למסמך זה."}</p>
-          </section>
-
           <section className="document-summary-block">
-            <h3>סיכום מורחב / תוכן שחולץ</h3>
-            <p>{document.fullSummary || document.aiSummary || "לא נמצא תוכן מורחב זמין למסמך זה."}</p>
+            <p>{summary || "לא נמצא סיכום זמין למסמך זה."}</p>
           </section>
 
-          {(document.breakdown?.length > 0 || document.totalDisability) && (
+          {(document.breakdown?.length > 0 || document.temporaryTotal || document.permanentTotal || document.totalDisability) && (
             <section className="document-disability-block">
-              <h3>פירוט נכות מתוך חוות הדעת</h3>
               {document.breakdown?.length > 0 && (
                 <div className="table-wrap">
                   <table className="data-table document-disability-table">
-                    <thead><tr><th>תחום / איבר</th><th>אחוז נכות</th><th>סוג הנכות</th><th>הערה קצרה</th></tr></thead>
+                    <thead><tr><th>תחום</th><th>תאריך</th><th>אחוז נכות</th></tr></thead>
                     <tbody>{document.breakdown.map((item, index) => (
-                      <tr key={`${item.label}-${index}`}>
-                        <td>{item.label}</td><td>{item.value}</td><td>{item.type || "—"}</td><td>{item.note || "—"}</td>
+                      <tr key={`${item.domain || item.label}-${index}`}>
+                        <td>{item.domain || item.label}</td><td>{item.date || document.date || "—"}</td><td>{item.percentage || item.value}</td>
                       </tr>
                     ))}</tbody>
                   </table>
                 </div>
               )}
-              {document.totalDisability && <strong className="document-disability-total">סה״כ נכות: {document.totalDisability}</strong>}
+              <div className="document-disability-totals">
+                {document.temporaryTotal && <strong className="document-disability-total">נכות זמנית כוללת: {document.temporaryTotal}</strong>}
+                {document.permanentTotal && <strong className="document-disability-total">נכות צמיתה כוללת: {document.permanentTotal}</strong>}
+                {!document.temporaryTotal && !document.permanentTotal && document.totalDisability && <strong className="document-disability-total">סה״כ נכות: {document.totalDisability}</strong>}
+              </div>
             </section>
           )}
 

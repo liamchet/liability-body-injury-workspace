@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { caseData } from "#case-data";
-import AuditTrail from "./components/AuditTrail";
+import AuditTrailDrawer from "./components/AuditTrailDrawer";
+import DamagesDrawer from "./components/DamagesDrawer";
 import DisabilityMatrix from "./components/DisabilityMatrix";
 import DocumentDetailViewer from "./components/DocumentDetailViewer";
 import DocumentsPanel from "./components/DocumentsPanel";
@@ -22,6 +23,24 @@ import { parseConfidence } from "./components/ReadabilityIndicator";
 const initialOpen = new Set(["general", "event"]);
 const currentUser = "מיישב תביעה";
 
+const totalDisabilityFor = (expert) => {
+  if (expert.id === "neuro") return { permanentTotal: "10%" };
+  if (expert.id === "psych") return expert.disability?.includes("40%") ? { temporaryTotal: "40%", permanentTotal: "10%" } : { permanentTotal: "10%" };
+  if (expert.id === "rheum" && expert.disability?.includes("20% צמיתה")) return { permanentTotal: "20%" };
+  if (expert.id === "malal") return { permanentTotal: "49%" };
+  return {};
+};
+
+const normalizeExpert = (expert) => ({
+  ...expert,
+  ...totalDisabilityFor(expert),
+  breakdown: (expert.breakdown || []).map((item) => ({
+    domain: item.domain || item.label,
+    date: item.date || expert.date,
+    percentage: item.percentage || item.value,
+  })),
+});
+
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [openSections, setOpenSections] = useState(initialOpen);
@@ -31,10 +50,12 @@ export default function App() {
   const [generalEditedFields, setGeneralEditedFields] = useState({});
   const [eventSummary, setEventSummary] = useState(caseData.eventSummary);
   const [timeline, setTimeline] = useState(caseData.timeline);
-  const [experts, setExperts] = useState(caseData.experts);
+  const [experts, setExperts] = useState(() => caseData.experts.map(normalizeExpert));
   const [gaps, setGaps] = useState(caseData.gaps);
   const [documents, setDocuments] = useState(() => caseData.documents.map((doc, index) => ({ ...doc, id: doc.id || `document-${index + 1}` })));
   const [auditEntries, setAuditEntries] = useState([]);
+  const [damagesOpen, setDamagesOpen] = useState(false);
+  const [auditOpen, setAuditOpen] = useState(false);
 
   const addAudit = useCallback((entry) => {
     setAuditEntries((items) => [{
@@ -85,6 +106,8 @@ export default function App() {
       manuallyReviewed: context.manuallyReviewed ?? metadata.manuallyReviewed,
       reviewMetadata: context.reviewMetadata || metadata.reviewMetadata,
       breakdown: context.breakdown || source.breakdown,
+      temporaryTotal: context.temporaryTotal || source.temporaryTotal,
+      permanentTotal: context.permanentTotal || source.permanentTotal,
       totalDisability: context.totalDisability || source.totalDisability,
       editMetadata: context.editMetadata || source.editMetadata,
     });
@@ -117,7 +140,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <Header meta={caseData.caseMeta} />
+      <Header meta={caseData.caseMeta} onOpenAudit={() => setAuditOpen(true)} auditCount={auditEntries.length} />
       <main className="report-workspace">
         <div className="print-brand"><PulseBrand variant="print" /></div>
         <section className="accordion-stack" aria-label="סעיפי סיכום תיק">
@@ -140,14 +163,13 @@ export default function App() {
           <ReportSection id="documents" icon="▤" title="מסמכים שנקראו" summary="קריאות, מקורות וסטטוס בדיקה" open={openSections.has("documents")} onToggle={toggleSection} actions={lowReadabilityCount ? <span className="section-warning" title="מסמכים שלא נכללו עקב קריאות נמוכה">⚠ {lowReadabilityCount}</span> : null}>
             <DocumentsPanel documents={documents} setDocuments={setDocuments} onSource={openDocument} onAudit={addAudit} />
           </ReportSection>
-          <ReportSection id="audit" icon="⌁" title="יומן שינויים" summary={`${auditEntries.length} פעולות מתועדות`} open={openSections.has("audit")} onToggle={toggleSection}>
-            <AuditTrail entries={auditEntries} />
-          </ReportSection>
         </section>
         <FutureRecommendations />
         <ExportActions meta={caseData.caseMeta} details={generalDetails} event={eventSummary} timeline={timeline} experts={experts} matrix={caseData.disabilityMatrix} gaps={gaps} documents={documents} />
       </main>
       <footer className="ai-disclaimer">סיכום זה הופק באמצעות מערכת בינה מלאכותית (AI) ועלול להכיל טעויות. יש לבצע בדיקה ואימות של המידע מול המסמכים המקוריים לפני קבלת החלטה.</footer>
+      <DamagesDrawer open={damagesOpen} onOpen={() => setDamagesOpen(true)} onClose={() => setDamagesOpen(false)} />
+      {auditOpen && <AuditTrailDrawer entries={auditEntries} onClose={() => setAuditOpen(false)} />}
       <DocumentDetailViewer document={activeDocument} onClose={() => setActiveDocument(null)} />
       {editModal && <EditModal {...editModal} onCancel={() => setEditModal(null)} />}
     </div>
