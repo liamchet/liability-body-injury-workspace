@@ -1,7 +1,7 @@
 import { useState } from "react";
 import EditModal from "./EditModal";
 
-export default function GapsPanel({ gaps, setGaps, onSource }) {
+export default function GapsPanel({ gaps, setGaps, onSource, onAudit }) {
   const [openIds, setOpenIds] = useState(new Set());
   const [adding, setAdding] = useState(false);
   const toggle = (index) => setOpenIds((current) => { const next = new Set(current); next.has(index) ? next.delete(index) : next.add(index); return next; });
@@ -22,7 +22,7 @@ export default function GapsPanel({ gaps, setGaps, onSource }) {
         })}
       </div>
       <div className="bottom-add"><button className="text-action" onClick={() => setAdding(true)}>הוסף פער</button></div>
-      {adding && <EditModal title="הוספת פער" fields={fields} initialValues={{ topic: "", positionA: "", sourceA: "", whatA: "", positionB: "", sourceB: "", whatB: "", detail: "" }} onCancel={() => setAdding(false)} onSave={(values) => { setGaps((items) => [...items, { topic: values.topic, positionA: values.positionA, positionB: values.positionB, detail: values.detail, sourceA: { title: values.sourceA, date: "", type: "מקור", content: values.whatA }, whatA: values.whatA, sourceB: { title: values.sourceB, date: "", type: "מקור", content: values.whatB }, whatB: values.whatB }]); setAdding(false); }} />}
+      {adding && <EditModal title="הוספת פער" fields={fields} initialValues={{ topic: "", positionA: "", sourceA: "", whatA: "", positionB: "", sourceB: "", whatB: "", detail: "" }} onCancel={() => setAdding(false)} onSave={(values) => { setGaps((items) => [...items, { topic: values.topic, positionA: values.positionA, positionB: values.positionB, detail: values.detail, sourceA: { title: values.sourceA, date: "", type: "מקור", content: values.whatA, aiSummary: values.whatA, fullSummary: values.whatA }, whatA: values.whatA, sourceB: { title: values.sourceB, date: "", type: "מקור", content: values.whatB, aiSummary: values.whatB, fullSummary: values.whatB }, whatB: values.whatB }]); onAudit?.({ action: "הוספה", section: "סתירות ופערים", item: values.topic, field: "פער", previousValue: "", newValue: values.detail }); setAdding(false); }} />}
     </section>
   );
 }

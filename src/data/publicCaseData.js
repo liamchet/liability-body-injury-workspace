@@ -1,8 +1,20 @@
 const source = (title, date, content, type = "מסמך מקור") => ({
+  id: `${title}-${date}`,
   title,
   date,
   type,
+  shortSummary: content,
+  aiSummary: content,
+  fullSummary: content,
   content,
+  sourceFile: null,
+  sourcePreviewUrl: null,
+  extractionConfidence: null,
+  includedInSummary: true,
+  manuallyReviewed: false,
+  reviewMetadata: null,
+  editedFields: {},
+  editMetadata: null,
 });
 
 export const sources = {
@@ -42,6 +54,7 @@ export const sources = {
   mriPelvis: source("פענוח MRI אגן - דוגמה", "2020", "ממצא אגן דוגמה לצורך הצגת פערים רפואיים.", "הדמיה"),
   mediation: source("סיכום גישור - דוגמה", "15/12/2025", "סיכום דוגמה של עמדות צדדים ושיעורי נכות.", "גישור / משפטי"),
   settlement: source("מסמכי סיום הליך - דוגמה", "26/12/2025", "מסמכי דוגמה לסיום הליך משפטי.", "משפטי"),
+  admin: source("מסמך מנהלתי סרוק חלקית - דוגמה", "2026", "מסמך מנהלתי שקריאותו אינה מספקת ולכן לא נכלל בסיכום.", "מנהלתי"),
 };
 
 export const caseData = {
@@ -89,12 +102,12 @@ export const caseData = {
     { id: "rheum", name: "מומחה ראומטולוגי", role: "ראומטולוגיה", date: "31/05/2024", field: "כאב כרוני", opinion: "פיברומיאלגיה ותסמונת כאב, עם חפיפה חלקית לנכות אחרת.", full: "חוות דעת דוגמה בתחום הכאב הכרוני.", disability: "10% נטו לאחר חפיפה", breakdown: [{ label: "כאב כרוני", value: "20%" }, { label: "נטו לאחר חפיפה", value: "10%" }], source: sources.rheumExpert },
   ],
   disabilityMatrix: [
-    ["כתף / בריח", "10%", "10% צמית", "-", "-", "-", "-", "-"],
-    ["אגן / עמוד שדרה מותני", "5% + 5%", "15% צמית", "-", "-", "-", "25% + 10%", "פער בין חלוקה לפריטים לבין קביעה משולבת"],
-    ["נוירולוגיה", "-", "ממצאים ללא קביעה נוירולוגית", "10% צמית", "-", "-", "10%", "פער בין תיעוד לבין שלילת חסר אורגני"],
-    ["פסיכיאטריה", "15%", "-", "-", "10% צמית", "-", "10%", "פער בין חיזוי לבין חוות דעת"],
-    ["כאב / פיברומיאלגיה", "20%", "-", "-", "-", "20% צמית; 10% נטו", "-", "פער בחישוב מול גורמים אחרים"],
-    ["נכות משוקללת", "לא חושבה", "23.5% אורתופדית", "10%", "10%", "20%", "49%", "פער בין נקודות ייחוס"],
+    ["כתף / בריח", "10%", "10% צמית", "-", "-", "-", "-"],
+    ["אגן / עמוד שדרה מותני", "5% + 5%", "15% צמית", "-", "-", "-", "25% + 10%"],
+    ["נוירולוגיה", "-", "ממצאים ללא קביעה נוירולוגית", "10% צמית", "-", "-", "10%"],
+    ["פסיכיאטריה", "15%", "-", "-", "10% צמית", "-", "10%"],
+    ["כאב / פיברומיאלגיה", "20%", "-", "-", "-", "20% צמית; 10% נטו", "-"],
+    ["נכות משוקללת", "לא חושבה", "23.5% אורתופדית", "10%", "10%", "20%", "49%"],
   ],
   gaps: [
     { topic: "פגיעה נוירולוגית", positionA: "תיעוד אורתופדי מציין ממצאים", positionB: "חוות דעת נוירולוגית שוללת חסר אורגני", detail: "פער בין תיעוד רפואי לבין קביעה מומחית.", sourceA: sources.orthoExpert, whatA: "מתאר ממצאים תחושתיים ומוטוריים.", sourceB: sources.neuroExpert, whatB: "קובע שאין חסר נוירולוגי אורגני." },
@@ -109,15 +122,16 @@ export const caseData = {
     { name: "פענוח CT מותני - דוגמה", type: "הדמיה", date: "04/05/2020", included: "כן", source: sources.ctLumbar, extraction: "94%", aiNotes: "חולץ לסיכום ממצאי עמוד שדרה." },
     { name: "פענוח MRI מותני - דוגמה", type: "הדמיה", date: "18/05/2020", included: "כן", source: sources.mriLumbar, extraction: "94%", aiNotes: "חולץ להשוואה מול תלונות." },
     { name: "בדיקת EMG - דוגמה", type: "בדיקת עזר", date: "01/09/2020", included: "כן", source: sources.emg, extraction: "93%", aiNotes: "חולץ לפער הנוירולוגי." },
-    { name: "גיליונות שיקום יום - דוגמה", type: "שיקום", date: "2021", included: "כן", source: sources.rehab, extraction: "91%", aiNotes: "חולץ לסיכום תפקודי." },
+    { name: "גיליונות שיקום יום - דוגמה", type: "שיקום", date: "2021", included: "כן", source: sources.rehab, extraction: "76%", aiNotes: "קריאות חלקית; חולץ לסיכום תפקודי ונדרשת בדיקה ידנית." },
     { name: "חוות דעת אורתופדית - דוגמה", type: "חוות דעת מומחה", date: "10/07/2022", included: "כן", source: sources.orthoExpert, extraction: "97%", aiNotes: "חולץ לסיכום מומחה ולמטריצת נכות." },
     { name: "חוות דעת נוירולוגית - דוגמה", type: "חוות דעת מומחה", date: "20/12/2022", included: "כן", source: sources.neuroExpert, extraction: "97%", aiNotes: "חולץ לסיכום מומחה ולפער נוירולוגי." },
     { name: "חוות דעת פסיכיאטרית - דוגמה", type: "חוות דעת מומחה", date: "24/02/2022", included: "כן", source: sources.psychExpert, extraction: "96%", aiNotes: "חולץ לנכות נפשית ולפערי תפקוד." },
-    { name: "חוות דעת ראומטולוגית - דוגמה", type: "חוות דעת מומחה", date: "31/05/2024", included: "כן", source: sources.rheumExpert, extraction: "96%", aiNotes: "חולץ לכאב כרוני." },
+    { name: "חוות דעת ראומטולוגית - דוגמה", type: "חוות דעת מומחה", date: "31/05/2024", included: "כן", source: sources.rheumExpert, extraction: "72%", aiNotes: "קריאות חלקית; חולצו קביעות הכאב הכרוני ונדרשת בדיקה ידנית." },
     { name: "אישור נכות רפואית - דוגמה", type: "מסמך מל\"ל", date: "14/10/2024", included: "כן", source: sources.malalApproval, extraction: "99%", aiNotes: "חולץ לשיעור נכות משוקלל." },
     { name: "נתוני עיסוק והכנסות - דוגמה", type: "עיסוק והכנסה", date: "15/12/2024", included: "כן", source: sources.income, extraction: "94%", aiNotes: "חולץ לפערי עיסוק ותפקוד." },
-    { name: "דו\"חות חקירה - דוגמה", type: "חקירה / תפקוד", date: "2021-2025", included: "כן", source: sources.investigations, extraction: "78%", aiNotes: "נכלל בהקשר תפקוד וסתירות." },
-    { name: "סיכום גישור - דוגמה", type: "גישור / משפטי", date: "15/12/2025", included: "כן", source: sources.mediation, extraction: "80%", aiNotes: "נכלל לצורך עמדות הצדדים." },
-    { name: "מסמכי סיום הליך - דוגמה", type: "משפטי", date: "26/12/2025", included: "כן", source: sources.settlement, extraction: "84%", aiNotes: "נכלל כחומר סיום הליך." },
+    { name: "דו\"חות חקירה - דוגמה", type: "חקירה / תפקוד", date: "2021-2025", included: "כן", source: sources.investigations, extraction: "88%", aiNotes: "נכלל בהקשר תפקוד וסתירות." },
+    { name: "סיכום גישור - דוגמה", type: "גישור / משפטי", date: "15/12/2025", included: "כן", source: sources.mediation, extraction: "87%", aiNotes: "נכלל לצורך עמדות הצדדים." },
+    { name: "מסמכי סיום הליך - דוגמה", type: "משפטי", date: "26/12/2025", included: "כן", source: sources.settlement, extraction: "86%", aiNotes: "נכלל כחומר סיום הליך." },
+    { name: "מסמך מנהלתי סרוק חלקית - דוגמה", type: "מנהלתי", date: "2026", included: "לא", source: sources.admin, extraction: "45%", aiNotes: "לא נכלל בסיכום עקב קריאות נמוכה." },
   ],
 };

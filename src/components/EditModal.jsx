@@ -1,6 +1,7 @@
 import { useState } from "react";
+import EditedIndicator from "./EditedIndicator";
 
-export default function EditModal({ title, fields, initialValues, onCancel, onSave }) {
+export default function EditModal({ title, fields, initialValues, editedFields = {}, onCancel, onSave }) {
   const [values, setValues] = useState(initialValues);
 
   const updateValue = (name, value) => {
@@ -18,7 +19,7 @@ export default function EditModal({ title, fields, initialValues, onCancel, onSa
         <div className="edit-form">
           {fields.map((field) => (
             <label key={field.name}>
-              <span>{field.label}</span>
+              <span>{field.label}<EditedIndicator metadata={editedFields[field.name]} compact /></span>
               {field.type === "textarea" ? (
                 <textarea
                   rows={field.rows || 4}
