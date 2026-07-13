@@ -124,27 +124,74 @@ input:focus-visible {
   gap: var(--sp-4);
 }
 
-.brand-block img {
-  width: 82px;
-  height: auto;
+.pulse-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  direction: ltr;
+  text-align: left;
 }
 
-.brand-block h1 {
-  margin: 0;
-  color: var(--mig-ink);
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 800;
-  line-height: 1.12;
-}
-
-.eyebrow {
+.pulse-brand img {
   display: block;
-  color: var(--mig-blue);
-  font-size: 13px;
-  font-weight: 800;
-  line-height: 1.4;
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  border-radius: 50%;
 }
+
+.pulse-brand-copy {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.pulse-brand-name {
+  color: #00235f;
+  font-family: Arial, sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1;
+}
+
+.pulse-brand-subtitle {
+  color: #356083;
+  font-family: Arial, sans-serif;
+  font-size: 8px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.pulse-brand--login {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+}
+
+.pulse-brand--login img {
+  width: 104px;
+  height: 104px;
+}
+
+.pulse-brand--login .pulse-brand-name {
+  font-size: 28px;
+}
+
+.pulse-brand--login .pulse-brand-subtitle {
+  max-width: 310px;
+  color: #17416f;
+  font-size: 13px;
+  line-height: 1.35;
+  white-space: normal;
+}
+
+.print-brand {
+  display: none;
+}
+
 
 .case-strip {
   display: flex;
@@ -1343,8 +1390,6 @@ input:focus-visible {
 
 .login-shell { min-height: 100vh; display:grid; place-items:center; padding:24px; background:linear-gradient(135deg,#f7f9ff,#eef3fb); }
 .login-card { width:min(430px,100%); display:grid; gap:12px; padding:34px; background:#fff; border:1px solid var(--mig-line); border-radius:12px; box-shadow:var(--sh-card); text-align:right; }
-.login-card img { width:86px; margin-bottom:4px; }
-.login-product { color:var(--mig-blue); font-size:13px; font-weight:900; }
 .login-card h1 { margin:0; font-size:23px; line-height:1.2; }
 .login-card p { margin:0 0 8px; color:var(--mig-slate-600); font-size:14px; }
 .login-card label { display:grid; gap:5px; color:var(--mig-slate-600); font-size:13px; font-weight:800; }
@@ -1387,7 +1432,7 @@ input:focus-visible {
 .matrix-source { color:#fff; border-bottom-color:#aab8e6; }
 .matrix-source:hover { color:var(--mig-green); border-bottom-color:var(--mig-green); }
 .export-actions { display:flex; justify-content:flex-start; gap:8px; margin:16px 0 8px; }
-@media print { .top-header,.section-actions,.section-toggle,.row-actions,.section-controls,.bottom-add,.future-recommendations,.export-actions,.feedback-control,.icon-action,.text-action { display:none !important; } .report-section { break-inside:avoid; box-shadow:none; } }
+@media print { .top-header,.section-actions,.section-toggle,.row-actions,.section-controls,.bottom-add,.future-recommendations,.export-actions,.feedback-control,.icon-action,.text-action { display:none !important; } .print-brand { display:block; margin:0 0 18px; } .pulse-brand--print img { width:52px; height:52px; } .pulse-brand--print .pulse-brand-name { font-size:24px; } .pulse-brand--print .pulse-brand-subtitle { font-size:12px; } .report-section { break-inside:avoid; box-shadow:none; } }
 @media (max-width:1100px) { .top-header { grid-template-columns:1fr; } .case-lookup { order:3; } }
 @media (max-width:720px) { .login-card { padding:24px; } .case-lookup input { width:100%; } .case-lookup { display:grid; grid-template-columns:1fr auto; } .timeline,.expert-list { padding-right:10px; } .timeline-item::before,.expert-row::before { right:-16px; } .gap-head { grid-template-columns:1fr; } }
 
@@ -1397,22 +1442,8 @@ input:focus-visible {
   padding: 6px 24px;
 }
 
-.brand-block img {
-  width: 50px;
-}
-
-.brand-block h1 {
-  font-size: 14px;
-  line-height: 1.1;
-}
-
 .brand-block {
   gap: 8px;
-}
-
-.eyebrow {
-  font-size: 10px;
-  line-height: 1.2;
 }
 
 .case-strip {
@@ -1797,5 +1828,13 @@ input:focus-visible {
   .source-compare,
   .expert-body dl {
     grid-template-columns: 1fr;
+  }
+
+  .pulse-brand-subtitle {
+    display: none;
+  }
+
+  .pulse-brand--login .pulse-brand-subtitle {
+    display: block;
   }
 }

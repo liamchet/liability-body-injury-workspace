@@ -187,7 +187,7 @@ export const sources = {
 };
 
 export const caseData = {
-  productName: "סביבת עבודה לתביעות חבויות ונזקי גוף",
+  productName: "PULSE",
   caseMeta: {
     insuredName: "לוסטיג רבקה",
     insuredId: "315596221",

@@ -15,6 +15,7 @@ import SourceModal from "./components/SourceModal";
 import ReportSection from "./components/ReportSection";
 import GeneralDetails from "./components/GeneralDetails";
 import EditModal from "./components/EditModal";
+import PulseBrand from "./components/PulseBrand";
 
 const initialOpen = new Set(["general", "event"]);
 
@@ -35,8 +36,10 @@ export default function App() {
   if (!loggedIn) return <LoginScreen onLogin={() => setLoggedIn(true)} />;
 
   return <div className="app-shell">
-    <Header meta={caseData.caseMeta} productName={caseData.productName} />
-    <main className="report-workspace"><section className="accordion-stack" aria-label="סעיפי סיכום תיק">
+    <Header meta={caseData.caseMeta} />
+    <main className="report-workspace">
+    <div className="print-brand"><PulseBrand variant="print" /></div>
+    <section className="accordion-stack" aria-label="סעיפי סיכום תיק">
       <ReportSection id="general" icon="●" title="פרטים כלליים" open={openSections.has("general")} onToggle={toggleSection} actions={<>{generalEdit}{feedback}</>}><GeneralDetails details={generalDetails} /></ReportSection>
       <ReportSection id="event" icon="◔" title="נסיבות האירוע" summary={eventSummary.short} open={openSections.has("event")} onToggle={toggleSection} actions={feedback}><EventSummary event={eventSummary} onSource={setModalSource} onUpdate={setEventSummary} /></ReportSection>
       <ReportSection id="timeline" icon="↕" title="סיכום רפואי כרונולוגי" summary="לאחר התאונה תועדו פגיעות אגן, כתף ועמוד שדרה, לצד שיקום וחוות דעת לאורך השנים." open={openSections.has("timeline")} onToggle={toggleSection} actions={feedback}><MedicalTimeline events={timeline} setEvents={setTimeline} onSource={setModalSource} /></ReportSection>

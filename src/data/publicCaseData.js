@@ -45,7 +45,7 @@ export const sources = {
 };
 
 export const caseData = {
-  productName: "סביבת עבודה לתביעות חבויות ונזקי גוף - דמו ציבורי",
+  productName: "PULSE",
   caseMeta: {
     insuredName: "מבוטחת לדוגמה",
     insuredId: "000000000",

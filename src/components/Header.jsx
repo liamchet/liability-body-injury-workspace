@@ -1,18 +1,14 @@
 import { useState } from "react";
-import migdalLogo from "../assets/migdal-logo.png";
+import PulseBrand from "./PulseBrand";
 
-export default function Header({ meta, productName }) {
+export default function Header({ meta }) {
   const [lookup, setLookup] = useState("");
   const [found, setFound] = useState(false);
 
   return (
     <header className="top-header">
       <div className="brand-block">
-        <img src={migdalLogo} alt="מגדל" />
-        <div>
-          <div className="eyebrow">Body Injury Claims Workspace</div>
-          <h1>{productName}</h1>
-        </div>
+        <PulseBrand />
       </div>
       <form className="case-lookup" onSubmit={(event) => { event.preventDefault(); setFound(true); }}>
         <input value={lookup} onChange={(event) => { setLookup(event.target.value); setFound(false); }} placeholder="הזן ת״ז / מספר תביעה / פוליסה" />
