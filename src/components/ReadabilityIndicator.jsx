@@ -14,6 +14,7 @@ export const readabilityState = (value) => {
 export default function ReadabilityIndicator({ value, compact = false, reviewed = false }) {
   const state = readabilityState(value);
   if (state.confidence === null) return null;
+  if (compact && state.tone !== "warning") return null;
 
   const tooltip = state.tone === "warning"
     ? "קריאות מסמך חלקית — נדרשת בדיקה"
@@ -24,8 +25,8 @@ export default function ReadabilityIndicator({ value, compact = false, reviewed 
   return (
     <span className={`readability-indicator is-${state.tone} ${compact ? "is-compact" : ""}`} title={tooltip}>
       <span className="readability-dot" aria-hidden="true" />
-      {compact && state.tone === "success" ? `${state.confidence}%` : `${state.label} · ${state.confidence}%`}
-      {reviewed && <span className="reviewed-mark">נבדק</span>}
+      {compact ? "קריאה חלקית" : `${state.label} · ${state.confidence}%`}
+      {!compact && reviewed && <span className="reviewed-mark">נבדק</span>}
     </span>
   );
 }

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import EditedIndicator from "./EditedIndicator";
-import ReadabilityIndicator from "./ReadabilityIndicator";
+import { parseConfidence } from "./ReadabilityIndicator";
 
 export default function DocumentDetailViewer({ document, onClose }) {
   useEffect(() => {
@@ -18,6 +18,14 @@ export default function DocumentDetailViewer({ document, onClose }) {
       ? [document.sourcePreviewUrl]
       : [];
   const summary = document.fullSummary || document.aiSummary || document.shortSummary;
+  const confidence = parseConfidence(document.extractionConfidence);
+  const inclusionLabel = document.inclusionStatus === "full" ? "נכלל במלואו בסיכום" : document.inclusionStatus === "partial" ? "נכלל חלקית בסיכום" : document.inclusionStatus === "excluded" ? "לא נכלל בסיכום" : "סטטוס הכללה לא ידוע";
+  const disabilityItems = [
+    ...(document.disabilityBreakdown || []).map((item) => `${item.label}: ${item.percentage}`),
+    document.temporaryDisability && `נכות זמנית: ${document.temporaryDisability}`,
+    document.permanentDisability && (document.temporaryDisability || document.permanentDisability !== document.totalDisability) && `נכות צמיתה: ${document.permanentDisability}`,
+    document.totalDisability && `נכות כוללת: ${document.totalDisability}`,
+  ].filter(Boolean);
 
   return (
     <div className="modal-backdrop document-viewer-backdrop" role="dialog" aria-modal="true" aria-labelledby="document-viewer-title" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
@@ -28,7 +36,9 @@ export default function DocumentDetailViewer({ document, onClose }) {
             <h2 id="document-viewer-title">{document.title}</h2>
             <div className="document-viewer-meta">
               <span>תאריך המסמך: <b>{document.date || "לא נמצא במסמכים"}</b></span>
-              <ReadabilityIndicator value={document.extractionConfidence} reviewed={document.manuallyReviewed} />
+              <span>רמת קריאות: <b>{confidence == null ? "לא ידועה" : `${confidence}%`}</b></span>
+              <span>{inclusionLabel}</span>
+              {document.manuallyReviewed && <span>נבדק ידנית</span>}
               <EditedIndicator metadata={document.editMetadata} />
             </div>
           </div>
@@ -40,25 +50,10 @@ export default function DocumentDetailViewer({ document, onClose }) {
             <p>{summary || "לא נמצא סיכום זמין למסמך זה."}</p>
           </section>
 
-          {(document.breakdown?.length > 0 || document.temporaryTotal || document.permanentTotal || document.totalDisability) && (
+          {disabilityItems.length > 0 && (
             <section className="document-disability-block">
-              {document.breakdown?.length > 0 && (
-                <div className="table-wrap">
-                  <table className="data-table document-disability-table">
-                    <thead><tr><th>תחום</th><th>תאריך</th><th>אחוז נכות</th></tr></thead>
-                    <tbody>{document.breakdown.map((item, index) => (
-                      <tr key={`${item.domain || item.label}-${index}`}>
-                        <td>{item.domain || item.label}</td><td>{item.date || document.date || "—"}</td><td>{item.percentage || item.value}</td>
-                      </tr>
-                    ))}</tbody>
-                  </table>
-                </div>
-              )}
-              <div className="document-disability-totals">
-                {document.temporaryTotal && <strong className="document-disability-total">נכות זמנית כוללת: {document.temporaryTotal}</strong>}
-                {document.permanentTotal && <strong className="document-disability-total">נכות צמיתה כוללת: {document.permanentTotal}</strong>}
-                {!document.temporaryTotal && !document.permanentTotal && document.totalDisability && <strong className="document-disability-total">סה״כ נכות: {document.totalDisability}</strong>}
-              </div>
+              <h3>קביעות נכות</h3>
+              <ul className="document-disability-list">{disabilityItems.map((item) => <li key={item}>{item}</li>)}</ul>
             </section>
           )}
 

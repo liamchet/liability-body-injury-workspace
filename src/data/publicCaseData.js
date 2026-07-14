@@ -61,10 +61,10 @@ export const caseData = {
   productName: "PULSE",
   caseMeta: {
     insuredName: "מבוטחת לדוגמה",
-    insuredId: "000000000",
+    insuredId: "000000018",
     reportDate: "01/07/2026",
     claimNumber: "DEMO-2026-0001",
-    policyNumber: "DEMO-POLICY-0001",
+    policyNumber: "99900012345",
     type: "נזקי גוף בעקבות תאונת דרכים",
   },
   generalDetails: [
@@ -96,10 +96,10 @@ export const caseData = {
     { id: 12, date: "31/05/2024", title: "חוות דעת ראומטולוגית", summary: "כאב כרוני ופיברומיאלגיה עם חפיפה חלקית.", full: "חוות דעת דוגמה בתחום הכאב הכרוני.", source: sources.rheumExpert },
   ],
   experts: [
-    { id: "ortho", name: "מומחה אורתופדי", role: "אורתופדיה", date: "10/07/2022", field: "כתף / אגן / גב", opinion: "ממצאים אורתופדיים וקביעת נכות לדוגמה.", full: "חוות הדעת קובעת נכות אורתופדית נפרדת למוקדי פגיעה שונים.", disability: "23.5% משוקלל", breakdown: [{ label: "כתף / בריח", value: "10%" }, { label: "אגן / עמוד שדרה מותני", value: "15%" }], source: sources.orthoExpert },
-    { id: "neuro", name: "מומחה נוירולוגי", role: "נוירולוגיה", date: "20/12/2022", field: "פגיעת ראש", opinion: "לא נמצא חסר אורגני בגפיים; נקבעה נכות בגין פגיעת ראש.", full: "חוות דעת דוגמה המשווה בין תלונות לבין ממצאים נוירולוגיים.", disability: "10% צמיתה", breakdown: [{ label: "פגיעת ראש / אובדן הכרה", value: "10%" }], source: sources.neuroExpert },
-    { id: "psych", name: "מומחה פסיכיאטרי", role: "פסיכיאטריה", date: "24/02/2022", field: "PTSD / חרדה", opinion: "הפרעת הסתגלות עם מאפיינים חרדתיים ופוסט-טראומטיים.", full: "חוות דעת דוגמה בתחום הנפשי לאחר תאונה.", disability: "10% צמיתה", breakdown: [{ label: "פסיכיאטריה", value: "10%" }], source: sources.psychExpert },
-    { id: "rheum", name: "מומחה ראומטולוגי", role: "ראומטולוגיה", date: "31/05/2024", field: "כאב כרוני", opinion: "פיברומיאלגיה ותסמונת כאב, עם חפיפה חלקית לנכות אחרת.", full: "חוות דעת דוגמה בתחום הכאב הכרוני.", disability: "10% נטו לאחר חפיפה", breakdown: [{ label: "כאב כרוני", value: "20%" }, { label: "נטו לאחר חפיפה", value: "10%" }], source: sources.rheumExpert },
+    { id: "ortho", documentTitle: "חוות דעת אורתופדית", documentDate: "10/07/2022", expertName: "מומחה אורתופדי", medicalField: "אורתופדיה", shortSummary: "ממצאים אורתופדיים וקביעת נכות לדוגמה.", fullSummary: "חוות הדעת קובעת נכות אורתופדית נפרדת למוקדי פגיעה שונים.", temporaryDisability: "", permanentDisability: "", totalDisability: "23.5%", disabilityBreakdown: [{ label: "כתף / בריח", percentage: "10%" }, { label: "אגן / עמוד שדרה מותני", percentage: "15%" }], source: sources.orthoExpert },
+    { id: "neuro", documentTitle: "חוות דעת נוירולוגית", documentDate: "20/12/2022", expertName: "מומחה נוירולוגי", medicalField: "נוירולוגיה", shortSummary: "לא נמצא חסר אורגני בגפיים; נקבעה נכות בגין פגיעת ראש.", fullSummary: "חוות דעת דוגמה המשווה בין תלונות לבין ממצאים נוירולוגיים.", temporaryDisability: "", permanentDisability: "10%", totalDisability: "10%", disabilityBreakdown: [{ label: "פגיעת ראש / אובדן הכרה", percentage: "10%" }], source: sources.neuroExpert },
+    { id: "psych", documentTitle: "חוות דעת פסיכיאטרית", documentDate: "24/02/2022", expertName: "מומחה פסיכיאטרי", medicalField: "פסיכיאטריה", shortSummary: "הפרעת הסתגלות עם מאפיינים חרדתיים ופוסט-טראומטיים.", fullSummary: "חוות דעת דוגמה בתחום הנפשי לאחר תאונה.", temporaryDisability: "", permanentDisability: "10%", totalDisability: "10%", disabilityBreakdown: [], source: sources.psychExpert },
+    { id: "rheum", documentTitle: "חוות דעת ראומטולוגית", documentDate: "31/05/2024", expertName: "מומחה ראומטולוגי", medicalField: "ראומטולוגיה", shortSummary: "פיברומיאלגיה ותסמונת כאב, עם חפיפה חלקית לנכות אחרת.", fullSummary: "חוות דעת דוגמה בתחום הכאב הכרוני.", temporaryDisability: "", permanentDisability: "", totalDisability: "10%", disabilityBreakdown: [{ label: "כאב כרוני", percentage: "20%" }, { label: "נטו לאחר חפיפה", percentage: "10%" }], source: sources.rheumExpert },
   ],
   disabilityMatrix: [
     ["כתף / בריח", "10%", "10% צמית", "-", "-", "-", "-"],

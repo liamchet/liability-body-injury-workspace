@@ -4,7 +4,7 @@ const fallbackHeaders = ["חיזוי", "מומחה אורתופדי", "מומח�
 export default function DisabilityMatrix({ rows, experts, onSource }) {
   const columns = columnIds.map((id, index) => {
     const expert = experts.find((item) => item.id === id);
-    return { id, label: expert?.name || fallbackHeaders[index], source: expert?.source };
+    return { id, label: expert?.expertName || fallbackHeaders[index], source: expert?.source };
   });
   const headers = ["תחום", ...columns.map((column) => column.label)];
 
@@ -16,7 +16,7 @@ export default function DisabilityMatrix({ rows, experts, onSource }) {
           <thead><tr>{headers.map((header, index) => {
             const expert = index > 0 ? experts.find((item) => item.id === columns[index - 1]?.id) : null;
             const source = expert?.source;
-            return <th key={header}>{source ? <button className="source-link matrix-source" onClick={() => onSource(source, { title: source.title, aiSummary: expert.opinion, fullSummary: expert.full, breakdown: expert.breakdown, temporaryTotal: expert.temporaryTotal, permanentTotal: expert.permanentTotal, totalDisability: expert.disability })}>{header}</button> : header}</th>;
+            return <th key={header}>{source ? <button className="source-link matrix-source" onClick={() => onSource(source, { title: expert.documentTitle || source.title, date: expert.documentDate, aiSummary: expert.shortSummary, fullSummary: expert.fullSummary, disabilityBreakdown: expert.disabilityBreakdown, temporaryDisability: expert.temporaryDisability, permanentDisability: expert.permanentDisability, totalDisability: expert.totalDisability })}>{header}</button> : header}</th>;
           })}</tr></thead>
           <tbody>{rows.map((row) => <tr key={row[0]}>{row.slice(0, headers.length).map((cell, index) => <td key={`${row[0]}-${index}`} className={String(cell).includes("%") ? "has-percent" : ""}>{cell}</td>)}</tr>)}</tbody>
         </table>
