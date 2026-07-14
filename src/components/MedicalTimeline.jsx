@@ -49,7 +49,7 @@ export default function MedicalTimeline({ events, setEvents, onSource, onAudit, 
 
   const openEvent = (event) => onSource(event.source, {
     title: event.source?.title || event.title, date: event.source?.date || event.date,
-    aiSummary: event.summary, fullSummary: event.full || event.source?.content,
+    fullSummary: event.originalSummary || event.summary,
     editMetadata: event.editMetadata, sourcePreviewUrl: event.source?.sourcePreviewUrl, sourceFileType: event.source?.sourceFileType,
   });
 

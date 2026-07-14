@@ -64,6 +64,7 @@ export default function App() {
     const doc = documents.find((item) => item.source === source || item.source?.title === source.title || item.name === source.title);
     const confidence = parseConfidence(doc?.extraction);
     return doc ? {
+      documentId: doc.id,
       extractionConfidence: doc.extraction,
       inclusionStatus: confidence > 85 && doc.included !== "לא" ? "full" : confidence >= 60 && doc.included !== "לא" ? "partial" : "excluded",
       manuallyReviewed: doc.manuallyReviewed,
@@ -75,6 +76,7 @@ export default function App() {
     const metadata = getDocumentMeta(source);
     setActiveDocument({
       id: source.id || context.id || `${source.title}-${source.date}`,
+      documentId: context.documentId || metadata.documentId,
       title: context.title || source.title || "מסמך מקור",
       date: context.date || source.date || "",
       type: context.type || source.type || "מסמך מקור",
@@ -91,10 +93,22 @@ export default function App() {
       disabilityBreakdown: context.disabilityBreakdown || source.disabilityBreakdown,
       temporaryDisability: context.temporaryDisability || source.temporaryDisability,
       permanentDisability: context.permanentDisability || source.permanentDisability,
+      netDisability: context.netDisability || source.netDisability,
       totalDisability: context.totalDisability || source.totalDisability,
       editMetadata: context.editMetadata || source.editMetadata,
     });
   }, [getDocumentMeta]);
+
+  const approveDocument = useCallback((documentId) => {
+    const doc = documents.find((item) => item.id === documentId);
+    const confidence = parseConfidence(doc?.extraction);
+    if (!doc || confidence < 60 || confidence > 85 || doc.manuallyReviewed) return;
+    const timestamp = new Date().toLocaleString("he-IL");
+    const reviewMetadata = { reviewedBy: currentUser, reviewedAt: timestamp };
+    setDocuments((items) => items.map((item) => item.id === documentId ? { ...item, manuallyReviewed: true, reviewMetadata } : item));
+    setActiveDocument((current) => current?.documentId === documentId ? { ...current, manuallyReviewed: true, reviewMetadata } : current);
+    addAudit({ action: "אישור קריאת מסמך", section: "מסמכים שנקראו", item: doc.name, field: "סטטוס בדיקה", previousValue: "טרם נבדק ידנית", newValue: `נבדק ידנית על ידי ${currentUser} בתאריך ${timestamp}` });
+  }, [addAudit, documents]);
 
   const lowReadabilityCount = useMemo(() => documents.filter((doc) => parseConfidence(doc.extraction) < 60).length, [documents]);
   const feedback = <FeedbackControl />;
@@ -125,7 +139,7 @@ export default function App() {
     <div className="app-shell">
       <Header meta={caseData.caseMeta} onOpenAudit={() => setAuditOpen(true)} auditCount={auditEntries.length} />
       <div className={`body-workspace ${damagesOpen ? "is-damages-open" : ""}`}>
-        <DamagesDrawer open={damagesOpen} onOpen={() => setDamagesOpen(true)} onClose={() => setDamagesOpen(false)} />
+        <DamagesDrawer open={damagesOpen} onOpen={() => setDamagesOpen(true)} onClose={() => setDamagesOpen(false)} meta={caseData.caseMeta} />
         <div className="claim-content-shell">
           <main className="report-workspace">
             <div className="print-brand"><PulseBrand variant="print" /></div>
@@ -147,7 +161,7 @@ export default function App() {
             <GapsPanel gaps={gaps} setGaps={setGaps} onSource={openDocument} onAudit={addAudit} />
           </ReportSection>
           <ReportSection id="documents" icon="▤" title="מסמכים שנקראו" summary="קריאות, מקורות וסטטוס בדיקה" open={openSections.has("documents")} onToggle={toggleSection} actions={lowReadabilityCount ? <span className="section-warning" title="מסמכים שלא נכללו עקב קריאות נמוכה">⚠ {lowReadabilityCount}</span> : null}>
-            <DocumentsPanel documents={documents} setDocuments={setDocuments} onSource={openDocument} onAudit={addAudit} />
+            <DocumentsPanel documents={documents} setDocuments={setDocuments} onSource={openDocument} onAudit={addAudit} onApprove={approveDocument} />
           </ReportSection>
             </section>
             <FutureRecommendations />
@@ -157,7 +171,7 @@ export default function App() {
         </div>
       </div>
       {auditOpen && <AuditTrailDrawer entries={auditEntries} onClose={() => setAuditOpen(false)} />}
-      <DocumentDetailViewer document={activeDocument} onClose={() => setActiveDocument(null)} />
+      <DocumentDetailViewer document={activeDocument} onClose={() => setActiveDocument(null)} onApprove={approveDocument} />
       {editModal && <EditModal {...editModal} onCancel={() => setEditModal(null)} />}
     </div>
   );

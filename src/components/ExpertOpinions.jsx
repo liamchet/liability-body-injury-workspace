@@ -5,7 +5,7 @@ import TimelineRow from "./TimelineRow";
 
 const fields = [
   { name: "documentDate", label: "תאריך מסמך" }, { name: "expertName", label: "שם מומחה" }, { name: "medicalField", label: "תחום רפואי" },
-  { name: "temporaryDisability", label: "נכות זמנית" }, { name: "permanentDisability", label: "נכות צמיתה" }, { name: "totalDisability", label: "נכות כוללת" },
+  { name: "temporaryDisability", label: "נכות זמנית" }, { name: "permanentDisability", label: "נכות צמיתה" }, { name: "netDisability", label: "נטו לאחר חפיפה" }, { name: "totalDisability", label: "נכות כוללת" },
   { name: "shortSummary", label: "סיכום קצר", type: "textarea", rows: 2 }, { name: "fullSummary", label: "סיכום מלא", type: "textarea", rows: 5 },
   { name: "disabilityBreakdown", label: "פירוט אחוזי נכות — רכיב | אחוז", type: "textarea", rows: 3 },
   { name: "sourceTitle", label: "שם מקור" }, { name: "sourceDate", label: "תאריך מקור" }, { name: "sourceType", label: "סוג מסמך" }, { name: "sourceContent", label: "תוכן מקור / תיאור מקור", type: "textarea", rows: 3 },
@@ -18,9 +18,10 @@ const parseBreakdown = (text = "") => text.split("\n").map((line) => line.trim()
 }).filter((item) => item.label && item.percentage);
 
 const formatTotals = (expert) => {
-  if (expert.temporaryDisability && expert.permanentDisability) return `זמנית: ${expert.temporaryDisability} | צמיתה: ${expert.permanentDisability}`;
+  if (expert.temporaryDisability && expert.permanentDisability) return `נכות זמנית: ${expert.temporaryDisability} | נכות צמיתה: ${expert.permanentDisability}`;
+  if (expert.permanentDisability && expert.netDisability) return `נכות צמיתה: ${expert.permanentDisability} | נטו: ${expert.netDisability}`;
   if (expert.totalDisability) return `נכות כוללת: ${expert.totalDisability}`;
-  if (expert.permanentDisability) return `נכות כוללת: ${expert.permanentDisability}`;
+  if (expert.permanentDisability) return `נכות צמיתה: ${expert.permanentDisability}`;
   if (expert.temporaryDisability) return `נכות זמנית: ${expert.temporaryDisability}`;
   return "";
 };
@@ -31,7 +32,7 @@ export default function ExpertOpinions({ experts, setExperts, onSource, onAudit,
 
   const valuesFor = (expert) => ({
     documentDate: expert.documentDate, expertName: expert.expertName, medicalField: expert.medicalField,
-    temporaryDisability: expert.temporaryDisability || "", permanentDisability: expert.permanentDisability || "", totalDisability: expert.totalDisability || "",
+    temporaryDisability: expert.temporaryDisability || "", permanentDisability: expert.permanentDisability || "", netDisability: expert.netDisability || "", totalDisability: expert.totalDisability || "",
     shortSummary: expert.shortSummary || "", fullSummary: expert.fullSummary || expert.shortSummary || "", disabilityBreakdown: breakdownText(expert),
     sourceTitle: expert.source?.title || "", sourceDate: expert.source?.date || "", sourceType: expert.source?.type || "", sourceContent: expert.source?.content || "",
   });
@@ -49,7 +50,7 @@ export default function ExpertOpinions({ experts, setExperts, onSource, onAudit,
     setExperts((items) => items.map((item) => item.id === editing.id ? {
       ...item, originalValues: item.originalValues || previous,
       documentDate: values.documentDate, expertName: values.expertName, medicalField: values.medicalField,
-      temporaryDisability: values.temporaryDisability, permanentDisability: values.permanentDisability, totalDisability: values.totalDisability,
+      temporaryDisability: values.temporaryDisability, permanentDisability: values.permanentDisability, netDisability: values.netDisability, totalDisability: values.totalDisability,
       shortSummary: values.shortSummary, fullSummary: values.fullSummary, disabilityBreakdown: parseBreakdown(values.disabilityBreakdown),
       manuallyEdited: true, editedFields: { ...(item.editedFields || {}), ...changedFields }, editMetadata: { editedBy: "מיישב תביעה", editedAt: timestamp },
       source: { ...item.source, title: values.sourceTitle, date: values.sourceDate || item.source?.date, type: values.sourceType || item.source?.type, content: values.sourceContent || item.source?.content, aiSummary: values.shortSummary, fullSummary: values.fullSummary },
@@ -68,7 +69,7 @@ export default function ExpertOpinions({ experts, setExperts, onSource, onAudit,
     title: expert.documentTitle || expert.source?.title || `${expert.expertName} – ${expert.medicalField}`,
     date: expert.documentDate, aiSummary: expert.shortSummary, fullSummary: expert.fullSummary,
     disabilityBreakdown: expert.disabilityBreakdown, temporaryDisability: expert.temporaryDisability,
-    permanentDisability: expert.permanentDisability, totalDisability: expert.totalDisability,
+    permanentDisability: expert.permanentDisability, netDisability: expert.netDisability, totalDisability: expert.totalDisability,
     editMetadata: expert.editMetadata, sourcePreviewUrl: expert.source?.sourcePreviewUrl, sourceFileType: expert.source?.sourceFileType,
   });
 
@@ -87,9 +88,9 @@ export default function ExpertOpinions({ experts, setExperts, onSource, onAudit,
       <div className="bottom-add"><button className="text-action" onClick={() => setAdding(true)}>הוסף חוות דעת</button></div>
 
       {editing && <EditModal title="עריכת חוות דעת מומחה" fields={fields} editedFields={editing.editedFields || {}} initialValues={valuesFor(editing)} onCancel={() => setEditing(null)} onSave={saveExpert} />}
-      {adding && <DocumentUploadForm kind="expert" title="הוספת חוות דעת" section="חוות דעת מומחים" fields={fields} initialValues={{ documentDate: "", expertName: "", medicalField: "", temporaryDisability: "", permanentDisability: "", totalDisability: "", shortSummary: "", fullSummary: "", disabilityBreakdown: "", sourceTitle: "", sourceDate: "", sourceType: "", sourceContent: "" }} onAudit={onAudit} onCancel={() => setAdding(false)} onSave={(values) => {
+      {adding && <DocumentUploadForm kind="expert" title="הוספת חוות דעת" section="חוות דעת מומחים" fields={fields} initialValues={{ documentDate: "", expertName: "", medicalField: "", temporaryDisability: "", permanentDisability: "", netDisability: "", totalDisability: "", shortSummary: "", fullSummary: "", disabilityBreakdown: "", sourceTitle: "", sourceDate: "", sourceType: "", sourceContent: "" }} onAudit={onAudit} onCancel={() => setAdding(false)} onSave={(values) => {
         const timestamp = new Date().toLocaleString("he-IL");
-        const next = { id: `expert-${Date.now()}`, documentTitle: values.sourceTitle || "חוות דעת רפואית", documentDate: values.documentDate, expertName: values.expertName, medicalField: values.medicalField, temporaryDisability: values.temporaryDisability, permanentDisability: values.permanentDisability, totalDisability: values.totalDisability, shortSummary: values.shortSummary, fullSummary: values.fullSummary, disabilityBreakdown: parseBreakdown(values.disabilityBreakdown), manuallyEdited: true, editMetadata: { editedBy: "מיישב תביעה", editedAt: timestamp }, source: { title: values.sourceTitle, date: values.sourceDate, type: values.sourceType || "חוות דעת", content: values.sourceContent, aiSummary: values.shortSummary, fullSummary: values.fullSummary, sourcePreviewUrl: values.sourcePreviewUrl, sourceFileType: values.sourceFileType } };
+        const next = { id: `expert-${Date.now()}`, documentTitle: values.sourceTitle || "חוות דעת רפואית", documentDate: values.documentDate, expertName: values.expertName, medicalField: values.medicalField, temporaryDisability: values.temporaryDisability, permanentDisability: values.permanentDisability, netDisability: values.netDisability, totalDisability: values.totalDisability, shortSummary: values.shortSummary, fullSummary: values.fullSummary, disabilityBreakdown: parseBreakdown(values.disabilityBreakdown), manuallyEdited: true, editMetadata: { editedBy: "מיישב תביעה", editedAt: timestamp }, source: { title: values.sourceTitle, date: values.sourceDate, type: values.sourceType || "חוות דעת", content: values.sourceContent, aiSummary: values.shortSummary, fullSummary: values.fullSummary, sourcePreviewUrl: values.sourcePreviewUrl, sourceFileType: values.sourceFileType } };
         setExperts((items) => [...items, next]);
         onAudit?.({ action: "הוספה", section: "חוות דעת מומחים", item: values.expertName, field: "חוות דעת", previousValue: "", newValue: values.shortSummary });
         setAdding(false);

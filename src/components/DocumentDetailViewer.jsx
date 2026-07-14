@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import EditedIndicator from "./EditedIndicator";
 import { parseConfidence } from "./ReadabilityIndicator";
 
-export default function DocumentDetailViewer({ document, onClose }) {
+export default function DocumentDetailViewer({ document, onClose, onApprove }) {
   useEffect(() => {
     if (!document) return undefined;
     const closeOnEscape = (event) => event.key === "Escape" && onClose();
@@ -19,12 +19,17 @@ export default function DocumentDetailViewer({ document, onClose }) {
       : [];
   const summary = document.fullSummary || document.aiSummary || document.shortSummary;
   const confidence = parseConfidence(document.extractionConfidence);
+  const partialReadability = confidence != null && confidence >= 60 && confidence <= 85;
   const inclusionLabel = document.inclusionStatus === "full" ? "נכלל במלואו בסיכום" : document.inclusionStatus === "partial" ? "נכלל חלקית בסיכום" : document.inclusionStatus === "excluded" ? "לא נכלל בסיכום" : "סטטוס הכללה לא ידוע";
+  const breakdown = document.disabilityBreakdown || [];
+  const hasValue = (value) => breakdown.some((item) => item.percentage === value);
+  const hasLabel = (label) => breakdown.some((item) => item.label.includes(label));
   const disabilityItems = [
-    ...(document.disabilityBreakdown || []).map((item) => `${item.label}: ${item.percentage}`),
-    document.temporaryDisability && `נכות זמנית: ${document.temporaryDisability}`,
-    document.permanentDisability && (document.temporaryDisability || document.permanentDisability !== document.totalDisability) && `נכות צמיתה: ${document.permanentDisability}`,
-    document.totalDisability && `נכות כוללת: ${document.totalDisability}`,
+    ...breakdown,
+    document.temporaryDisability && !hasLabel("זמנית") && { label: "נכות זמנית", percentage: document.temporaryDisability },
+    document.permanentDisability && !hasLabel("צמיתה") && !hasValue(document.permanentDisability) && { label: "נכות צמיתה", percentage: document.permanentDisability },
+    document.netDisability && !hasLabel("נטו") && { label: "נטו לאחר חפיפה", percentage: document.netDisability },
+    document.totalDisability && { label: "נכות כוללת", percentage: document.totalDisability },
   ].filter(Boolean);
 
   return (
@@ -34,13 +39,7 @@ export default function DocumentDetailViewer({ document, onClose }) {
           <div>
             <span className="document-kicker">מסמך מקור</span>
             <h2 id="document-viewer-title">{document.title}</h2>
-            <div className="document-viewer-meta">
-              <span>תאריך המסמך: <b>{document.date || "לא נמצא במסמכים"}</b></span>
-              <span>רמת קריאות: <b>{confidence == null ? "לא ידועה" : `${confidence}%`}</b></span>
-              <span>{inclusionLabel}</span>
-              {document.manuallyReviewed && <span>נבדק ידנית</span>}
-              <EditedIndicator metadata={document.editMetadata} />
-            </div>
+            <div className="document-viewer-meta"><span>תאריך המסמך: <b>{document.date || "לא נמצא במסמכים"}</b></span><EditedIndicator metadata={document.editMetadata} /></div>
           </div>
           <button className="modal-close" type="button" onClick={onClose} aria-label="סגור">×</button>
         </header>
@@ -53,9 +52,18 @@ export default function DocumentDetailViewer({ document, onClose }) {
           {disabilityItems.length > 0 && (
             <section className="document-disability-block">
               <h3>קביעות נכות</h3>
-              <ul className="document-disability-list">{disabilityItems.map((item) => <li key={item}>{item}</li>)}</ul>
+              <dl className="document-disability-list">{disabilityItems.map((item) => <div key={`${item.label}-${item.percentage}`}><dt>{item.label}</dt><dd>{item.percentage}</dd></div>)}</dl>
             </section>
           )}
+
+          <section className={`document-review-block ${partialReadability ? "is-partial" : ""}`}>
+            <div className="document-review-facts">
+              <span>רמת קריאות: <strong>{confidence == null ? "לא ידועה" : `${confidence}%`}</strong></span>
+              <span>{inclusionLabel}</span>
+              <span>{document.manuallyReviewed ? `נבדק ידנית על ידי ${document.reviewMetadata?.reviewedBy || "מיישב תביעה"} בתאריך ${document.reviewMetadata?.reviewedAt || "לא צוין"}` : "טרם נבדק ידנית"}</span>
+            </div>
+            {partialReadability && !document.manuallyReviewed && document.documentId && <button className="manual-review-button" type="button" onClick={() => onApprove?.(document.documentId)}>אשר קריאה ידנית</button>}
+          </section>
 
           <section className="document-source-block">
             <h3>מסמך המקור הסרוק</h3>

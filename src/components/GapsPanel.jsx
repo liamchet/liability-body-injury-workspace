@@ -17,7 +17,7 @@ export default function GapsPanel({ gaps, setGaps, onSource, onAudit }) {
           const open = openIds.has(index);
           return <article className="gap-card" key={`${gap.topic}-${index}`}>
             <div className="gap-head-row"><button className="gap-head" onClick={() => toggle(index)} aria-expanded={open}><span><strong>{gap.topic}</strong><small>{gap.detail}</small></span><span className="gap-sources"><em>א׳ {gap.positionA}</em><em>ב׳ {gap.positionB}</em></span><span className="chevron">{open ? "−" : "+"}</span></button></div>
-            {open && <div className="gap-body"><p>{gap.detail}</p><div className="gap-source"><strong>מקור א׳</strong><button className="source-link" onClick={() => onSource(gap.sourceA)}>{gap.sourceA.title}</button><span>{gap.whatA}</span></div><div className="gap-source"><strong>מקור ב׳</strong><button className="source-link" onClick={() => onSource(gap.sourceB)}>{gap.sourceB.title}</button><span>{gap.whatB}</span></div></div>}
+            {open && <div className="gap-body"><p>{gap.detail}</p><div className="gap-source"><strong>מקור א׳</strong><button className="source-link" onClick={() => onSource(gap.sourceA, { fullSummary: gap.whatA })}>{gap.sourceA.title}</button><span>{gap.whatA}</span></div><div className="gap-source"><strong>מקור ב׳</strong><button className="source-link" onClick={() => onSource(gap.sourceB, { fullSummary: gap.whatB })}>{gap.sourceB.title}</button><span>{gap.whatB}</span></div></div>}
           </article>;
         })}
       </div>

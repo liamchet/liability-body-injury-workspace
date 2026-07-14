@@ -16,7 +16,7 @@ export default function DisabilityMatrix({ rows, experts, onSource }) {
           <thead><tr>{headers.map((header, index) => {
             const expert = index > 0 ? experts.find((item) => item.id === columns[index - 1]?.id) : null;
             const source = expert?.source;
-            return <th key={header}>{source ? <button className="source-link matrix-source" onClick={() => onSource(source, { title: expert.documentTitle || source.title, date: expert.documentDate, aiSummary: expert.shortSummary, fullSummary: expert.fullSummary, disabilityBreakdown: expert.disabilityBreakdown, temporaryDisability: expert.temporaryDisability, permanentDisability: expert.permanentDisability, totalDisability: expert.totalDisability })}>{header}</button> : header}</th>;
+            return <th key={header}>{source ? <button className="source-link matrix-source" onClick={() => onSource(source, { title: expert.documentTitle || source.title, date: expert.documentDate, fullSummary: expert.fullSummary, disabilityBreakdown: expert.disabilityBreakdown, temporaryDisability: expert.temporaryDisability, permanentDisability: expert.permanentDisability, netDisability: expert.netDisability, totalDisability: expert.totalDisability })}>{header}</button> : header}</th>;
           })}</tr></thead>
           <tbody>{rows.map((row) => <tr key={row[0]}>{row.slice(0, headers.length).map((cell, index) => <td key={`${row[0]}-${index}`} className={String(cell).includes("%") ? "has-percent" : ""}>{cell}</td>)}</tr>)}</tbody>
         </table>

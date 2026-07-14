@@ -4,7 +4,7 @@ const extractedValues = (kind, fileName) => {
   const sourceTitle = fileName.replace(/\.[^.]+$/, "");
   if (kind === "expert") {
     return {
-      documentDate: "01/07/2026", expertName: "ד״ר מומחה לדוגמה", medicalField: "אורתופדיה", permanentDisability: "10%", totalDisability: "10%",
+      documentDate: "01/07/2026", expertName: "ד״ר מומחה לדוגמה", medicalField: "אורתופדיה", permanentDisability: "10%", netDisability: "", totalDisability: "10%",
       shortSummary: "בחוות הדעת תועד ממצא רפואי ונקבעה נכות צמיתה.",
       fullSummary: "המערכת חילצה מן המסמך את פרטי המומחה, הממצאים המרכזיים והערכת הנכות. יש לעבור על הנתונים לפני השמירה.",
       disabilityBreakdown: "פגיעה אורתופדית | 10%", sourceTitle, sourceDate: "01/07/2026",

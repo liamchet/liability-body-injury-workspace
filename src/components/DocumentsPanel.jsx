@@ -8,14 +8,8 @@ const fields = [
   { name: "extraction", label: "אחוז קריאות" }, { name: "aiNotes", label: "הערות AI", type: "textarea", rows: 3 },
 ];
 
-export default function DocumentsPanel({ documents, setDocuments, onSource, onAudit }) {
+export default function DocumentsPanel({ documents, setDocuments, onSource, onAudit, onApprove }) {
   const [adding, setAdding] = useState(false);
-
-  const approveRead = (doc) => {
-    const timestamp = new Date().toLocaleString("he-IL");
-    setDocuments((items) => items.map((item) => item.id === doc.id ? { ...item, manuallyReviewed: true, reviewMetadata: { reviewedBy: "מיישב תביעה", reviewedAt: timestamp } } : item));
-    onAudit?.({ action: "אישור קריאת מסמך", section: "מסמכים שנקראו", item: doc.name, field: "סטטוס בדיקה", previousValue: "ממתין לבדיקה", newValue: `נבדק ידנית על ידי מיישב תביעה ב-${timestamp}` });
-  };
 
   return (
     <section className="panel documents-panel">
@@ -30,10 +24,10 @@ export default function DocumentsPanel({ documents, setDocuments, onSource, onAu
               <tr key={doc.id} className={`document-row is-${state.tone}`}>
                 <td><strong>{doc.name}</strong>{excluded && <small className="low-readability-note">לא נכלל בסיכום עקב קריאות נמוכה</small>}</td>
                 <td>{doc.type}</td><td>{doc.date}</td><td>{excluded ? "לא" : doc.included}</td>
-                <td><button className="source-link" onClick={() => onSource(doc.source, { title: doc.name, date: doc.date, aiSummary: doc.aiNotes, fullSummary: doc.source?.fullSummary || doc.source?.content, extractionConfidence: doc.extraction, manuallyReviewed: doc.manuallyReviewed, reviewMetadata: doc.reviewMetadata })}>{doc.source?.title || doc.name}</button></td>
+                <td><button className="source-link" onClick={() => onSource(doc.source, { documentId: doc.id, title: doc.name, date: doc.date, fullSummary: doc.source?.content, extractionConfidence: doc.extraction, manuallyReviewed: doc.manuallyReviewed, reviewMetadata: doc.reviewMetadata })}>{doc.source?.title || doc.name}</button></td>
                 <td><ReadabilityIndicator value={doc.extraction} reviewed={doc.manuallyReviewed} /></td>
                 <td>{doc.aiNotes}</td>
-                <td>{state.tone === "warning" ? (doc.manuallyReviewed ? <span className="review-status">נבדק על ידי {doc.reviewMetadata?.reviewedBy}<small>{doc.reviewMetadata?.reviewedAt}</small></span> : <button className="manual-review-button" onClick={() => approveRead(doc)}>אשר קריאה ידנית</button>) : state.tone === "error" ? <span className="review-status is-error">נדרשת בדיקה נפרדת</span> : <span className="review-status is-success">נקרא בהצלחה</span>}</td>
+                <td>{state.tone === "warning" ? (doc.manuallyReviewed ? <span className="review-status">נבדק ידנית על ידי {doc.reviewMetadata?.reviewedBy}<small>{doc.reviewMetadata?.reviewedAt}</small></span> : <button className="manual-review-button" onClick={() => onApprove?.(doc.id)}>אשר קריאה ידנית</button>) : state.tone === "error" ? <span className="review-status is-error">נדרשת בדיקה נפרדת</span> : <span className="review-status is-success">נקרא בהצלחה</span>}</td>
               </tr>
             );
           })}</tbody>
