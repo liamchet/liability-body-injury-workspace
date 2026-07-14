@@ -1807,6 +1807,10 @@ input:focus-visible {
 @media (max-width: 800px) {
   .unified-timeline-row.is-expert .timeline-row-main,
   .unified-timeline-row.is-expert .timeline-row-main.has-disability { grid-template-columns: 1fr; }
+  .unified-timeline-row.is-expert .timeline-row-total,
+  .unified-timeline-row.is-expert .row-summary,
+  .unified-timeline-row.is-expert .timeline-row-status,
+  .unified-timeline-row.is-expert .row-open-hint { grid-column: auto; grid-row: auto; }
   .unified-timeline-row.is-expert .timeline-row-status { width: auto; min-height: 0; justify-content: flex-start; }
   .unified-timeline-row.is-expert .timeline-row-status:empty { display: none; }
   .document-review-block { align-items: stretch; flex-direction: column; }
