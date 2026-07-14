@@ -1608,6 +1608,7 @@ input:focus-visible {
   z-index: 48;
   top: 46%;
   left: -40px;
+  right: auto;
   bottom: auto;
   display: inline-flex;
   gap: 7px;
