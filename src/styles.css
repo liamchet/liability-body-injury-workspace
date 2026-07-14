@@ -1599,7 +1599,7 @@ input:focus-visible {
   transition: grid-template-columns .2s ease;
 }
 .body-workspace.is-damages-open { grid-template-columns: 400px minmax(0, 1fr); }
-.claim-content-shell { min-width: 0; direction: rtl; }
+.claim-content-shell { grid-column: 2; min-width: 0; direction: rtl; }
 .claim-content-shell .report-workspace { width: min(1180px, calc(100% - 32px)); }
 .claim-content-shell .ai-disclaimer { direction: rtl; }
 
@@ -1620,11 +1620,13 @@ input:focus-visible {
   border-radius: 0 0 8px 8px;
   box-shadow: 0 5px 14px rgba(2, 35, 95, .22);
   font-weight: 900;
-  transform: rotate(-90deg) translateX(-50%);
-  transform-origin: left top;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  transform: translateY(-50%) rotate(180deg);
+  transform-origin: center;
 }
 .body-workspace.is-damages-open .damages-tab { left: 400px; }
-.damages-tab > span { display: inline; }
+.damages-tab > span:last-child { display: inline; width: auto; height: auto; color: inherit; background: transparent; white-space: nowrap; }
 .damages-drawer {
   position: sticky;
   z-index: 35;
@@ -1725,7 +1727,7 @@ input:focus-visible {
 
 @media (max-width: 600px) {
   .claim-content-shell .report-workspace { width: calc(100% - 20px); }
-  .side-utility-tab.damages-tab { top: auto; right: auto; bottom: 18px; left: 0; transform: none; border-radius: 0 8px 8px 0; }
+  .side-utility-tab.damages-tab { top: auto; right: auto; bottom: 18px; left: 0; writing-mode: horizontal-tb; transform: none; border-radius: 0 8px 8px 0; }
   .body-workspace.is-damages-open .damages-tab { display: none; }
   .damages-drawer { width: 100vw; max-width: 100vw; }
   .damages-list { height: calc(100vh - 124px); }
