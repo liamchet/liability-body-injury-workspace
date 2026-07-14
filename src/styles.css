@@ -1793,7 +1793,7 @@ input:focus-visible {
 .damages-export-actions { display: flex; flex-wrap: wrap; gap: 5px; }
 .damages-drawer .drawer-tools { align-items: center; }
 
-@media (max-width: 1100px) and (min-width: 601px) {
+@media (max-width: 1100px) and (min-width: 801px) {
   .unified-timeline-row.is-expert .timeline-row-main,
   .unified-timeline-row.is-expert .timeline-row-main.has-disability {
     grid-template-columns: 88px 165px minmax(0, 1fr) 150px 88px;
@@ -1804,7 +1804,7 @@ input:focus-visible {
   .unified-timeline-row.is-expert .timeline-row-status { width: 88px; }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 800px) {
   .unified-timeline-row.is-expert .timeline-row-main,
   .unified-timeline-row.is-expert .timeline-row-main.has-disability { grid-template-columns: 1fr; }
   .unified-timeline-row.is-expert .timeline-row-status { width: auto; min-height: 0; justify-content: flex-start; }
